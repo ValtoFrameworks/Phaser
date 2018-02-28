@@ -1,33 +1,96 @@
+/**
+ * @author       Richard Davey <rich@photonstorm.com>
+ * @copyright    2018 Photon Storm Ltd.
+ * @license      {@link https://github.com/photonstorm/phaser/blob/master/license.txt|MIT License}
+ */
+
 var Class = require('../../utils/Class');
 var Features = require('../../device/Features');
 
 //  https://developer.mozilla.org/en-US/docs/Web/API/MouseEvent
 //  https://github.com/WICG/EventListenerOptions/blob/gh-pages/explainer.md
 
+/**
+ * @classdesc
+ * [description]
+ *
+ * @class MouseManager
+ * @memberOf Phaser.Input.Mouse
+ * @constructor
+ * @since 3.0.0
+ *
+ * @param {Phaser.Input.InputManager} inputManager - [description]
+ */
 var MouseManager = new Class({
 
     initialize:
 
     function MouseManager (inputManager)
     {
+        /**
+         * [description]
+         *
+         * @name Phaser.Input.Mouse.MouseManager#manager
+         * @type {Phaser.Input.InputManager}
+         * @since 3.0.0
+         */
         this.manager = inputManager;
 
-        // @property {boolean} capture - If true the DOM mouse events will have event.preventDefault applied to them, if false they will propagate fully.
+        /**
+         * If true the DOM mouse events will have event.preventDefault applied to them, if false they will propagate fully.
+         *
+         * @name Phaser.Input.Mouse.MouseManager#capture
+         * @type {boolean}
+         * @default true
+         * @since 3.0.0
+         */
         this.capture = true;
 
+        /**
+         * [description]
+         *
+         * @name Phaser.Input.Mouse.MouseManager#enabled
+         * @type {boolean}
+         * @default false
+         * @since 3.0.0
+         */
         this.enabled = false;
 
+        /**
+         * [description]
+         *
+         * @name Phaser.Input.Mouse.MouseManager#target
+         * @type {null}
+         * @since 3.0.0
+         */
         this.target;
 
+        /**
+         * [description]
+         *
+         * @name Phaser.Input.Mouse.MouseManager#handler
+         * @type {null}
+         * @since 3.0.0
+         */
         this.handler;
 
         /**
-         * @property {boolean} locked - If the mouse has been pointer locked successfully this will
-         * be set to true.
+         * If the mouse has been pointer locked successfully this will be set to true.
+         *
+         * @name Phaser.Input.Mouse.MouseManager#locked
+         * @type {boolean}
+         * @default false
+         * @since 3.0.0
          */
         this.locked = false;
     },
 
+    /**
+     * [description]
+     *
+     * @method Phaser.Input.Mouse.MouseManager#boot
+     * @since 3.0.0
+     */
     boot: function ()
     {
         var config = this.manager.config;
@@ -52,6 +115,14 @@ var MouseManager = new Class({
         }
     },
 
+    /**
+     * [description]
+     *
+     * @method Phaser.Input.Mouse.MouseManager#disableContextMenu
+     * @since 3.0.0
+     *
+     * @return {Phaser.Input.Mouse.MouseManager} [description]
+     */
     disableContextMenu: function ()
     {
         document.body.addEventListener('contextmenu', function (event)
@@ -65,12 +136,18 @@ var MouseManager = new Class({
 
     /**
      * If the browser supports it, you can request that the pointer be locked to the browser window.
+     * 
      * This is classically known as 'FPS controls', where the pointer can't leave the browser until
-     * the user presses an exit key. If the browser successfully enters a locked state, a
-     * 'POINTER_LOCK_CHANGE_EVENT' will be dispatched - from the game's input manager - with an
-     * `isPointerLocked` property.
+     * the user presses an exit key.
+     * 
+     * If the browser successfully enters a locked state, a `POINTER_LOCK_CHANGE_EVENT` will be dispatched,
+     * from the games Input Manager, with an `isPointerLocked` property.
+     * 
      * It is important to note that pointer lock can only be enabled after an 'engagement gesture',
      * see: https://w3c.github.io/pointerlock/#dfn-engagement-gesture.
+     *
+     * @method Phaser.Input.Mouse.MouseManager#requestPointerLock
+     * @since 3.0.0
      */
     requestPointerLock: function ()
     {
@@ -85,13 +162,17 @@ var MouseManager = new Class({
     /**
      * Internal pointerLockChange handler.
      *
+     * @method Phaser.Input.Mouse.MouseManager#pointerLockChange
+     * @since 3.0.0
+     *
      * @param {Event} event - The native event from the browser.
      */
     pointerLockChange: function (event)
     {
         var element = this.target;
-        this.locked = document.pointerLockElement === element || document.mozPointerLockElement === element || document.webkitPointerLockElement === element
-            ? true : false;
+
+        this.locked = (document.pointerLockElement === element || document.mozPointerLockElement === element || document.webkitPointerLockElement === element) ? true : false;
+
         this.manager.queue.push(event);
     },
 
@@ -99,6 +180,9 @@ var MouseManager = new Class({
      * If the browser supports pointer lock, this will request that the pointer lock is released. If
      * the browser successfully enters a locked state, a 'POINTER_LOCK_CHANGE_EVENT' will be
      * dispatched - from the game's input manager - with an `isPointerLocked` property.
+     *
+     * @method Phaser.Input.Mouse.MouseManager#releasePointerLock
+     * @since 3.0.0
      */
     releasePointerLock: function ()
     {
@@ -109,6 +193,12 @@ var MouseManager = new Class({
         }
     },
 
+    /**
+     * [description]
+     *
+     * @method Phaser.Input.Mouse.MouseManager#startListeners
+     * @since 3.0.0
+     */
     startListeners: function ()
     {
         var queue = this.manager.queue;
@@ -170,6 +260,12 @@ var MouseManager = new Class({
         }
     },
 
+    /**
+     * [description]
+     *
+     * @method Phaser.Input.Mouse.MouseManager#stopListeners
+     * @since 3.0.0
+     */
     stopListeners: function ()
     {
         var target = this.target;
@@ -184,6 +280,19 @@ var MouseManager = new Class({
             document.removeEventListener('mozpointerlockchange', this.pointerLockChange, true);
             document.removeEventListener('webkitpointerlockchange', this.pointerLockChange, true);
         }
+    },
+
+    /**
+     * [description]
+     *
+     * @method Phaser.Input.Mouse.MouseManager#destroy
+     * @since 3.0.0
+     */
+    destroy: function ()
+    {
+        this.stopListeners();
+
+        this.manager = null;
     }
 
 });

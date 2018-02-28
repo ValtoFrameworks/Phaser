@@ -1,3 +1,9 @@
+/**
+ * @author       Richard Davey <rich@photonstorm.com>
+ * @copyright    2018 Photon Storm Ltd.
+ * @license      {@link https://github.com/photonstorm/phaser/blob/master/license.txt|MIT License}
+ */
+
 // var GetPointsOnLine = require('../geom/line/GetPointsOnLine');
 var BresenhamPoints = require('../geom/line/BresenhamPoints');
 
@@ -6,7 +12,7 @@ var BresenhamPoints = require('../geom/line/BresenhamPoints');
  *
  * @function Phaser.Actions.PlaceOnTriangle
  * @since 3.0.0
- * 
+ *
  * @param {array} items - An array of Game Objects. The contents of this array are updated by this Action.
  * @param {Phaser.Geom.Triangle} triangle - [description]
  * @param {number} [stepRate=1] - [description]
@@ -34,8 +40,8 @@ var PlaceOnTriangle = function (items, triangle, stepRate)
         var item = items[i];
         var point = p1[Math.floor(p)];
 
-        item.x = point[0];
-        item.y = point[1];
+        item.x = point.x;
+        item.y = point.y;
 
         p += step;
     }

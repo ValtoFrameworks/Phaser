@@ -1,5 +1,11 @@
-var Shuffle = require('./Shuffle');
+/**
+ * @author       Richard Davey <rich@photonstorm.com>
+ * @copyright    2018 Photon Storm Ltd.
+ * @license      {@link https://github.com/photonstorm/phaser/blob/master/license.txt|MIT License}
+ */
+
 var GetValue = require('../object/GetValue');
+var Shuffle = require('./Shuffle');
 
 var BuildChunk = function (a, b, qty)
 {
@@ -49,6 +55,18 @@ var BuildChunk = function (a, b, qty)
 //  Range ([a, b], [1,2,3], yoyo = true) =
 //  a1, a2, a3, b1, b2, b3, b3, b2, b1, a3, a2, a1
 
+/**
+ * [description]
+ *
+ * @function Phaser.Utils.Array.Range
+ * @since 3.0.0
+ *
+ * @param {[type]} a - [description]
+ * @param {[type]} b - [description]
+ * @param {[type]} options - [description]
+ *
+ * @return {[type]} [description]
+ */
 var Range = function (a, b, options)
 {
     var max = GetValue(options, 'max', 0);

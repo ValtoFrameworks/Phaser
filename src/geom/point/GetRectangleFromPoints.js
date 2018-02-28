@@ -1,9 +1,13 @@
+/**
+ * @author       Richard Davey <rich@photonstorm.com>
+ * @copyright    2018 Photon Storm Ltd.
+ * @license      {@link https://github.com/photonstorm/phaser/blob/master/license.txt|MIT License}
+ */
+
 var Rectangle = require('../rectangle/Rectangle');
 
-// Calculates the Axis Aligned Bounding Box (or aabb) from an array of points.
-
 /**
- * [description]
+ * Calculates the Axis Aligned Bounding Box (or aabb) from an array of points.
  *
  * @function Phaser.Geom.Point.GetRectangleFromPoints
  * @since 3.0.0

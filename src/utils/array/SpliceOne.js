@@ -1,9 +1,13 @@
-//  Removes a single item from an array and returns it
-//  without creating gc (like the native splice does)
+/**
+ * @author       Richard Davey <rich@photonstorm.com>
+ * @copyright    2018 Photon Storm Ltd.
+ * @license      {@link https://github.com/photonstorm/phaser/blob/master/license.txt|MIT License}
+ */
+
 //  Based on code by Mike Reinstein
 
 /**
- * [description]
+ * Removes a single item from an array and returns it without creating gc (like the native splice does)
  *
  * @function Phaser.Utils.Array.SpliceOne
  * @since 3.0.0

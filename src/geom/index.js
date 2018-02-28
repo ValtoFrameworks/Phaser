@@ -1,4 +1,12 @@
-//  Phaser.Geom
+/**
+ * @author       Richard Davey <rich@photonstorm.com>
+ * @copyright    2018 Photon Storm Ltd.
+ * @license      {@link https://github.com/photonstorm/phaser/blob/master/license.txt|MIT License}
+ */
+
+/**
+ * @namespace Phaser.Geom
+ */
 
 module.exports = {
     
@@ -6,7 +14,6 @@ module.exports = {
     Ellipse: require('./ellipse'),
     Intersects: require('./intersects'),
     Line: require('./line'),
-    Mesh: require('./mesh'),
     Point: require('./point'),
     Polygon: require('./polygon'),
     Rectangle: require('./rectangle'),

@@ -1,5 +1,30 @@
+/**
+ * @author       Richard Davey <rich@photonstorm.com>
+ * @copyright    2018 Photon Storm Ltd.
+ * @license      {@link https://github.com/photonstorm/phaser/blob/master/license.txt|MIT License}
+ */
+
 var GetFastValue = require('../../utils/object/GetFastValue');
 
+/**
+ * Parses a Sprite Sheet and adds the Frames to the Texture.
+ * 
+ * In Phaser terminology a Sprite Sheet is a texture containing different frames, but each frame is the exact
+ * same size and cannot be trimmed or rotated.
+ *
+ * @function Phaser.Textures.Parsers.SpriteSheet
+ * @since 3.0.0
+ *
+ * @param {Phaser.Textures.Texture} texture - The Texture to add the Frames to.
+ * @param {integer} sourceIndex - The index of the TextureSource.
+ * @param {integer} x - [description]
+ * @param {integer} y - [description]
+ * @param {integer} width - [description]
+ * @param {integer} height - [description]
+ * @param {object} config - [description]
+ *
+ * @return {Phaser.Textures.Texture} The Texture modified by this parser.
+ */
 var SpriteSheet = function (texture, sourceIndex, x, y, width, height, config)
 {
     var frameWidth = GetFastValue(config, 'frameWidth', null);
@@ -21,8 +46,8 @@ var SpriteSheet = function (texture, sourceIndex, x, y, width, height, config)
     var margin = GetFastValue(config, 'margin', 0);
     var spacing = GetFastValue(config, 'spacing', 0);
 
-    var row = Math.floor((width - margin) / (frameWidth + spacing));
-    var column = Math.floor((height - margin) / (frameHeight + spacing));
+    var row = Math.floor((width - margin + spacing) / (frameWidth + spacing));
+    var column = Math.floor((height - margin + spacing) / (frameHeight + spacing));
     var total = row * column;
 
     if (startFrame > total || startFrame < -total)

@@ -1,8 +1,12 @@
-// Moves the element at the end of the array to the start, shifting all items in the process.
-// The "rotation" happens to the right.
+/**
+ * @author       Richard Davey <rich@photonstorm.com>
+ * @copyright    2018 Photon Storm Ltd.
+ * @license      {@link https://github.com/photonstorm/phaser/blob/master/license.txt|MIT License}
+ */
 
 /**
- * [description]
+ * Moves the element at the end of the array to the start, shifting all items in the process.
+ * The "rotation" happens to the right.
  *
  * @function Phaser.Utils.Array.RotateRight
  * @since 3.0.0

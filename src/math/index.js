@@ -1,16 +1,17 @@
-var RND = require('./random-data-generator/RandomDataGenerator');
+/**
+ * @author       Richard Davey <rich@photonstorm.com>
+ * @copyright    2018 Photon Storm Ltd.
+ * @license      {@link https://github.com/photonstorm/phaser/blob/master/license.txt|MIT License}
+ */
 
-module.exports = {
+var CONST = require('./const');
+var Extend = require('../utils/object/Extend');
 
-    //  Consts
-    PI2: Math.PI * 2,
-    TAU: Math.PI * 0.5,
-    EPSILON: 1.0e-6,
-    DEG_TO_RAD: Math.PI / 180,
-    RAD_TO_DEG: 180 / Math.PI,
+/**
+ * @namespace Phaser.Math
+ */
 
-    //  Random Data Generator
-    RND: new RND(),
+var PhaserMath = {
 
     //  Collections of functions
     Angle: require('./angle/'),
@@ -57,10 +58,6 @@ module.exports = {
     Within: require('./Within'),
     Wrap: require('./Wrap'),
 
-    //  Classes
-    MinMax2: require('./MinMax2'),
-    MinMax4: require('./MinMax4'),
-
     //  Vector classes
     Vector2: require('./Vector2'),
     Vector3: require('./Vector3'),
@@ -71,3 +68,11 @@ module.exports = {
     RotateVec3: require('./RotateVec3')
 
 };
+
+//   Merge in the consts
+
+PhaserMath = Extend(false, PhaserMath, CONST);
+
+//  Export it
+
+module.exports = PhaserMath;

@@ -1,16 +1,46 @@
-var Class = require('../utils/Class');
-var PluginManager = require('../plugins/PluginManager');
+/**
+ * @author       Richard Davey <rich@photonstorm.com>
+ * @copyright    2018 Photon Storm Ltd.
+ * @license      {@link https://github.com/photonstorm/phaser/blob/master/license.txt|MIT License}
+ */
 
-//  A proxy class to the Global Scene Manager
+var Class = require('../utils/Class');
+var CONST = require('./const');
+var PluginManager = require('../boot/PluginManager');
+
+/**
+ * @classdesc
+ * A proxy class to the Global Scene Manager.
+ *
+ * @class ScenePlugin
+ * @memberOf Phaser.Scenes
+ * @constructor
+ * @since 3.0.0
+ *
+ * @param {Phaser.Scene} scene - [description]
+ */
 var ScenePlugin = new Class({
 
     initialize:
 
     function ScenePlugin (scene)
     {
-        //  The Scene that owns this plugin
+        /**
+         * [description]
+         *
+         * @name Phaser.Scenes.ScenePlugin#scene
+         * @type {Phaser.Scene}
+         * @since 3.0.0
+         */
         this.scene = scene;
 
+        /**
+         * [description]
+         *
+         * @name Phaser.Scenes.ScenePlugin#systems
+         * @type {Phaser.Scenes.Systems}
+         * @since 3.0.0
+         */
         this.systems = scene.sys;
 
         if (!scene.sys.settings.isBooted)
@@ -18,188 +48,276 @@ var ScenePlugin = new Class({
             scene.sys.events.once('boot', this.boot, this);
         }
 
+        /**
+         * [description]
+         *
+         * @name Phaser.Scenes.ScenePlugin#settings
+         * @type {object}
+         * @since 3.0.0
+         */
         this.settings = scene.sys.settings;
 
+        /**
+         * [description]
+         *
+         * @name Phaser.Scenes.ScenePlugin#key
+         * @type {string}
+         * @since 3.0.0
+         */
         this.key = scene.sys.settings.key;
 
-        //  SceneManager
+        /**
+         * [description]
+         *
+         * @name Phaser.Scenes.ScenePlugin#manager
+         * @type {Phaser.Scenes.SceneManager}
+         * @since 3.0.0
+         */
         this.manager = scene.sys.game.scene;
-
-        //  Private
-        this._queue = [];
     },
 
+    /**
+     * [description]
+     *
+     * @method Phaser.Scenes.ScenePlugin#boot
+     * @since 3.0.0
+     */
     boot: function ()
     {
         var eventEmitter = this.systems.events;
 
-        eventEmitter.on('preupdate', this.preUpdate, this);
         eventEmitter.on('shutdown', this.shutdown, this);
         eventEmitter.on('destroy', this.destroy, this);
     },
 
-    preUpdate: function ()
-    {
-        var len = this._queue.length;
-
-        if (len === 0)
-        {
-            return;
-        }
-
-        var manager = this.manager;
-
-        //  Process the queue
-        for (var i = 0; i < len; i++)
-        {
-            var action = this._queue[i];
-
-            switch (action.type)
-            {
-                case 'add':
-                    manager.add(action.key, action.data, action.autoStart);
-                    break;
-
-                case 'start':
-                    manager.stop(this.key);
-                    manager.start(action.key, action.data);
-                    break;
-
-                case 'launch':
-                    manager.start(action.key, action.data);
-                    break;
-
-                case 'pause':
-                    manager.pause(action.key);
-                    break;
-
-                case 'resume':
-                    manager.resume(action.key);
-                    break;
-
-                case 'stop':
-                    manager.stop(action.key);
-                    break;
-
-                case 'swap':
-                    manager.swap(this.key, action.key);
-                    break;
-
-                case 'moveUp':
-                    manager.moveUp(this.key);
-                    break;
-
-                case 'moveDown':
-                    manager.moveDown(this.key);
-                    break;
-
-                case 'bringToTop':
-                    manager.bringToTop(this.key);
-                    break;
-
-                case 'sendToBack':
-                    manager.sendToBack(this.key);
-                    break;
-
-                case 'swapPosition':
-                    manager.swapPosition(this.key, action.key);
-                    break;
-
-                case 'sleep':
-                    manager.sleep(action.key);
-                    break;
-
-                case 'wake':
-                    manager.wake(action.key);
-                    break;
-            }
-        }
-
-        this._queue.length = 0;
-    },
-
-    //  Shutdown this Scene and run the given one
+    /**
+     * Shutdown this Scene and run the given one.
+     *
+     * @method Phaser.Scenes.ScenePlugin#start
+     * @since 3.0.0
+     *
+     * @param {string} key - [description]
+     * @param {object} [data] - [description]
+     *
+     * @return {Phaser.Scenes.ScenePlugin} This ScenePlugin object.
+     */
     start: function (key, data)
     {
         if (key === undefined) { key = this.key; }
 
-        this._queue.push({ type: 'start', key: key, data: data });
+        if (key !== this.key)
+        {
+            if (this.settings.status !== CONST.RUNNING)
+            {
+                this.manager.queueOp('stop', this.key);
+                this.manager.queueOp('start', key);
+            }
+            else
+            {
+                this.manager.stop(this.key);
+                this.manager.start(key, data);
+            }
+        }
 
         return this;
     },
 
-    //  Add the Scene into the Scene Manager and start it if 'autoStart' is true or the Scene config 'active' property is set
+    /**
+     * Add the Scene into the Scene Manager and start it if 'autoStart' is true or the Scene config 'active' property is set.
+     *
+     * @method Phaser.Scenes.ScenePlugin#add
+     * @since 3.0.0
+     *
+     * @param {string} key - [description]
+     * @param {object} sceneConfig - [description]
+     * @param {boolean} autoStart - [description]
+     *
+     * @return {Phaser.Scenes.ScenePlugin} This ScenePlugin object.
+     */
     add: function (key, sceneConfig, autoStart)
     {
-        this._queue.push({ type: 'add', key: key, data: sceneConfig, autoStart: autoStart });
+        this.manager.add(key, sceneConfig, autoStart);
 
         return this;
     },
 
-    //  Launch the given Scene and run it in parallel with this one
+    /**
+     * Launch the given Scene and run it in parallel with this one.
+     *
+     * @method Phaser.Scenes.ScenePlugin#launch
+     * @since 3.0.0
+     *
+     * @param {string} key - [description]
+     * @param {object} [data] - [description]
+     *
+     * @return {Phaser.Scenes.ScenePlugin} This ScenePlugin object.
+     */
     launch: function (key, data)
     {
-        if (key === undefined) { key = this.key; }
-
-        this._queue.push({ type: 'launch', key: key, data: data });
+        if (key && key !== this.key)
+        {
+            if (this.settings.status !== CONST.RUNNING)
+            {
+                this.manager.queueOp('start', key, data);
+            }
+            else
+            {
+                this.manager.start(key, data);
+            }
+        }
 
         return this;
     },
 
-    //  Pause the Scene - this stops the update step from happening but it still renders
+    /**
+     * Pause the Scene - this stops the update step from happening but it still renders.
+     *
+     * @method Phaser.Scenes.ScenePlugin#pause
+     * @since 3.0.0
+     *
+     * @param {string} key - [description]
+     *
+     * @return {Phaser.Scenes.ScenePlugin} This ScenePlugin object.
+     */
     pause: function (key)
     {
         if (key === undefined) { key = this.key; }
 
-        this._queue.push({ type: 'pause', key: key });
+        this.manager.pause(key);
 
         return this;
     },
 
-    //  Resume the Scene - starts the update loop again
+    /**
+     * Resume the Scene - starts the update loop again.
+     *
+     * @method Phaser.Scenes.ScenePlugin#resume
+     * @since 3.0.0
+     *
+     * @param {string} key - [description]
+     *
+     * @return {Phaser.Scenes.ScenePlugin} This ScenePlugin object.
+     */
     resume: function (key)
     {
         if (key === undefined) { key = this.key; }
 
-        this._queue.push({ type: 'resume', key: key });
+        this.manager.resume(key);
 
         return this;
     },
 
-    //  Makes the Scene sleep (no update, no render) but doesn't shutdown
+    /**
+     * Makes the Scene sleep (no update, no render) but doesn't shutdown.
+     *
+     * @method Phaser.Scenes.ScenePlugin#sleep
+     * @since 3.0.0
+     *
+     * @param {string} key - [description]
+     *
+     * @return {Phaser.Scenes.ScenePlugin} This ScenePlugin object.
+     */
     sleep: function (key)
     {
-        this._queue.push({ type: 'sleep', key: key });
+        if (key === undefined) { key = this.key; }
+
+        this.manager.sleep(key);
 
         return this;
     },
 
-    //  Makes the Scene wake-up (starts update and render)
+    /**
+     * Makes the Scene wake-up (starts update and render)
+     *
+     * @method Phaser.Scenes.ScenePlugin#wake
+     * @since 3.0.0
+     *
+     * @param {string} key - [description]
+     *
+     * @return {Phaser.Scenes.ScenePlugin} This ScenePlugin object.
+     */
     wake: function (key)
     {
-        this._queue.push({ type: 'wake', key: key });
+        if (key === undefined) { key = this.key; }
+
+        this.manager.wake(key);
 
         return this;
     },
 
-    //  Makes this Scene sleep then starts the Scene given
-    swap: function (key)
+    /**
+     * Makes this Scene sleep then starts the Scene given.
+     *
+     * @method Phaser.Scenes.ScenePlugin#switch
+     * @since 3.0.0
+     *
+     * @param {string} key - [description]
+     *
+     * @return {Phaser.Scenes.ScenePlugin} This ScenePlugin object.
+     */
+    switch: function (key)
     {
-        this._queue.push({ type: 'swap', key: key });
+        if (key !== this.key)
+        {
+            if (this.settings.status !== CONST.RUNNING)
+            {
+                this.manager.queueOp('switch', this.key, key);
+            }
+            else
+            {
+                this.manager.switch(this.key, key);
+            }
+        }
 
         return this;
     },
 
-    //  Shutdown the Scene, clearing display list, timers, etc
+    /**
+     * Shutdown the Scene, clearing display list, timers, etc.
+     *
+     * @method Phaser.Scenes.ScenePlugin#stop
+     * @since 3.0.0
+     *
+     * @param {string} key - [description]
+     *
+     * @return {Phaser.Scenes.ScenePlugin} This ScenePlugin object.
+     */
     stop: function (key)
     {
         if (key === undefined) { key = this.key; }
 
-        this._queue.push({ type: 'stop', key: key });
+        this.manager.stop(key);
 
         return this;
     },
 
+    /**
+     * Sets the active state of the given Scene.
+     *
+     * @method Phaser.Scenes.ScenePlugin#setActive
+     * @since 3.0.0
+     *
+     * @param {boolean} value - [description]
+     *
+     * @return {Phaser.Scenes.ScenePlugin} This ScenePlugin object.
+     */
+    setActive: function (value)
+    {
+        this.settings.active = value;
+
+        return this;
+    },
+
+    /**
+     * Sets the visible state of the given Scene.
+     *
+     * @method Phaser.Scenes.ScenePlugin#setVisible
+     * @since 3.0.0
+     *
+     * @param {boolean} value - [description]
+     *
+     * @return {Phaser.Scenes.ScenePlugin} This ScenePlugin object.
+     */
     setVisible: function (value)
     {
         this.settings.visible = value;
@@ -207,40 +325,33 @@ var ScenePlugin = new Class({
         return this;
     },
 
-    swapPosition: function (key)
+    /**
+     * Checks if the given Scene is sleeping or not?
+     *
+     * @method Phaser.Scenes.ScenePlugin#isSleeping
+     * @since 3.0.0
+     *
+     * @param {string} key - [description]
+     *
+     * @return {boolean} [description]
+     */
+    isSleeping: function (key)
     {
-        this._queue.push({ type: 'swapPosition', key: key });
+        if (key === undefined) { key = this.key; }
+
+        return this.manager.isSleeping(key);
     },
 
-    moveUp: function ()
-    {
-        this._queue.push({ type: 'moveUp' });
-    },
-
-    moveDown: function ()
-    {
-        this._queue.push({ type: 'moveDown' });
-    },
-
-    bringToTop: function ()
-    {
-        this._queue.push({ type: 'bringToTop' });
-    },
-
-    sendToBack: function ()
-    {
-        this._queue.push({ type: 'sendToBack' });
-    },
-
-    get: function (key)
-    {
-        return this.manager.getScene(key);
-    },
-
-    transitionTo: function (key, duration)
-    {
-    },
-
+    /**
+     * Checks if the given Scene is active or not?
+     *
+     * @method Phaser.Scenes.ScenePlugin#isActive
+     * @since 3.0.0
+     *
+     * @param {string} key - [description]
+     *
+     * @return {boolean} [description]
+     */
     isActive: function (key)
     {
         if (key === undefined) { key = this.key; }
@@ -248,11 +359,151 @@ var ScenePlugin = new Class({
         return this.manager.isActive(key);
     },
 
+    /**
+     * Checks if the given Scene is visible or not?
+     *
+     * @method Phaser.Scenes.ScenePlugin#isVisible
+     * @since 3.0.0
+     *
+     * @param {string} key - [description]
+     *
+     * @return {boolean} [description]
+     */
+    isVisible: function (key)
+    {
+        if (key === undefined) { key = this.key; }
+
+        return this.manager.isVisible(key);
+    },
+
+    /**
+     * [description]
+     *
+     * @method Phaser.Scenes.ScenePlugin#swapPosition
+     * @since 3.0.0
+     *
+     * @param {string} key - [description]
+     *
+     * @return {Phaser.Scenes.ScenePlugin} This ScenePlugin object.
+     */
+    swapPosition: function (key)
+    {
+        if (key && key !== this.key)
+        {
+            this.manager.swapPosition(this.key, key);
+        }
+
+        return this;
+    },
+
+    /**
+     * [description]
+     *
+     * @method Phaser.Scenes.ScenePlugin#moveUp
+     * @since 3.0.0
+     *
+     * @param {string} key - [description]
+     *
+     * @return {Phaser.Scenes.ScenePlugin} This ScenePlugin object.
+     */
+    moveUp: function (key)
+    {
+        if (key === undefined) { key = this.key; }
+
+        this.manager.moveUp(key);
+
+        return this;
+    },
+
+    /**
+     * [description]
+     *
+     * @method Phaser.Scenes.ScenePlugin#moveDown
+     * @since 3.0.0
+     *
+     * @param {string} key - [description]
+     *
+     * @return {Phaser.Scenes.ScenePlugin} This ScenePlugin object.
+     */
+    moveDown: function (key)
+    {
+        if (key === undefined) { key = this.key; }
+
+        this.manager.moveDown(key);
+
+        return this;
+    },
+
+    /**
+     * [description]
+     *
+     * @method Phaser.Scenes.ScenePlugin#bringToTop
+     * @since 3.0.0
+     *
+     * @param {string} key - [description]
+     *
+     * @return {Phaser.Scenes.ScenePlugin} This ScenePlugin object.
+     */
+    bringToTop: function (key)
+    {
+        if (key === undefined) { key = this.key; }
+
+        this.manager.bringToTop(key);
+
+        return this;
+    },
+
+    /**
+     * [description]
+     *
+     * @method Phaser.Scenes.ScenePlugin#sendToBack
+     * @since 3.0.0
+     *
+     * @param {string} key - [description]
+     *
+     * @return {Phaser.Scenes.ScenePlugin} This ScenePlugin object.
+     */
+    sendToBack: function (key)
+    {
+        if (key === undefined) { key = this.key; }
+
+        this.manager.sendToBack(key);
+
+        return this;
+    },
+
+    /**
+     * [description]
+     *
+     * @method Phaser.Scenes.ScenePlugin#get
+     * @since 3.0.0
+     *
+     * @param {string} key - [description]
+     *
+     * @return {Phaser.Scene} [description]
+     */
+    get: function (key)
+    {
+        return this.manager.getScene(key);
+    },
+
+    /**
+     * [description]
+     *
+     * @method Phaser.Scenes.ScenePlugin#shutdown
+     * @since 3.0.0
+     */
     shutdown: function ()
     {
         //  TODO
     },
 
+    /**
+     * [description]
+     *
+     * @method Phaser.Scenes.ScenePlugin#destroy
+     * @since 3.0.0
+     */
     destroy: function ()
     {
         //  TODO

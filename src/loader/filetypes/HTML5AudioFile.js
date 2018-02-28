@@ -1,10 +1,30 @@
+/**
+ * @author       Richard Davey <rich@photonstorm.com>
+ * @copyright    2018 Photon Storm Ltd.
+ * @license      {@link https://github.com/photonstorm/phaser/blob/master/license.txt|MIT License}
+ */
+
 var Class = require('../../utils/Class');
 var File = require('../File');
 var GetFastValue = require('../../utils/object/GetFastValue');
 var GetURL = require('../GetURL');
 
-//  Phaser.Loader.FileTypes.HTML5AudioFile
-
+/**
+ * @classdesc
+ * [description]
+ *
+ * @class HTML5AudioFile
+ * @extends Phaser.Loader.File
+ * @memberOf Phaser.Loader.FileTypes
+ * @constructor
+ * @since 3.0.0
+ *
+ * @param {string} key - [description]
+ * @param {string} url - [description]
+ * @param {string} path - [description]
+ * @param {object} config - [description]
+ * @param {boolean} locked - [description]
+ */
 var HTML5AudioFile = new Class({
 
     Extends: File,
@@ -14,6 +34,8 @@ var HTML5AudioFile = new Class({
         function HTML5AudioFile (key, url, path, config, locked)
         {
             this.locked = locked;
+
+            this.loaded = false;
 
             var fileConfig = {
                 type: 'audio',
@@ -29,10 +51,17 @@ var HTML5AudioFile = new Class({
 
     onLoad: function ()
     {
-        this.callback(this, true);
+        if(this.loaded)
+        {
+            return;
+        }
+
+        this.loaded = true;
+
+        this.loader.nextFile(this, true);
     },
 
-    onError: function (event)
+    onError: function ()
     {
         for (var i = 0; i < this.data.length; i++)
         {
@@ -41,7 +70,7 @@ var HTML5AudioFile = new Class({
             audio.onerror = null;
         }
 
-        this.callback(this, false);
+        this.loader.nextFile(this, false);
     },
 
     onProgress: function (event)
@@ -50,18 +79,22 @@ var HTML5AudioFile = new Class({
         audio.oncanplaythrough = null;
         audio.onerror = null;
 
-        if(++this.filesLoaded === this.filesTotal)
+        this.filesLoaded++;
+
+        this.percentComplete = Math.min((this.filesLoaded / this.filesTotal), 1);
+
+        this.loader.emit('fileprogress', this, this.percentComplete);
+
+        if(this.filesLoaded === this.filesTotal)
         {
             this.onLoad();
         }
-
-        this.percentComplete = Math.min((this.filesLoaded / this.filesTotal), 1);
     },
 
     //  Called by the Loader, starts the actual file downloading
-    load: function (callback, baseURL)
+    load: function (loader)
     {
-        this.callback = callback;
+        this.loader = loader;
 
         this.data = [];
 
@@ -90,7 +123,7 @@ var HTML5AudioFile = new Class({
         for (i = 0; i < this.data.length; i++)
         {
             audio = this.data[i];
-            audio.src = GetURL(this, baseURL || '');
+            audio.src = GetURL(this, loader.baseURL);
 
             if (!this.locked)
             {
@@ -100,13 +133,7 @@ var HTML5AudioFile = new Class({
 
         if (this.locked)
         {
-            setTimeout(function ()
-            {
-                this.filesLoaded = this.filesTotal;
-                this.percentComplete = 1;
-                this.onLoad();
-
-            }.bind(this));
+            setTimeout(this.onLoad.bind(this));
         }
     }
 

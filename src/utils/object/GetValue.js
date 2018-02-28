@@ -1,7 +1,25 @@
+/**
+ * @author       Richard Davey <rich@photonstorm.com>
+ * @copyright    2018 Photon Storm Ltd.
+ * @license      {@link https://github.com/photonstorm/phaser/blob/master/license.txt|MIT License}
+ */
+
 //  Source object
 //  The key as a string, or an array of keys, i.e. 'banner', or 'banner.hideBanner'
 //  The default value to use if the key doesn't exist
 
+/**
+ * [description]
+ *
+ * @function Phaser.Utils.Object.GetValue
+ * @since 3.0.0
+ *
+ * @param {object} source - [description]
+ * @param {string} key - [description]
+ * @param {any} defaultValue - [description]
+ *
+ * @return {any} [description]
+ */
 var GetValue = function (source, key, defaultValue)
 {
     if (!source || typeof source === 'number')

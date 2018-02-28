@@ -2,7 +2,7 @@
 
 It's important to us that you feel you can contribute towards the evolution of Phaser. This can take many forms: from helping to fix bugs or improve the docs, to adding in new features to the source. This guide should help you in making that process as smooth as possible.
 
-Before contributing, please read the [code of conduct](https://github.com/photonstorm/phaser/blob/master/v2/CODE_OF_CONDUCT.md).
+Before contributing, please read the [code of conduct](https://github.com/photonstorm/phaser/blob/master/.github/CODE_OF_CONDUCT.md).
 
 ## Reporting issues
 
@@ -14,14 +14,14 @@ Before contributing, please read the [code of conduct](https://github.com/photon
 
 **3. Create an isolated and reproducible test case.** If you are reporting a bug, make sure you also have a minimal, runnable, code example that reproduces the problem you have.
 
-**4. Include a live example.** After narrowing your code down to only the problem areas, make use of [jsFiddle][1], [jsBin][2], or a link to your live site so that we can view a live example of the problem.
+**4. Include a live example.** After narrowing your code down to only the problem areas, make use of [jsFiddle][1], [jsBin][2], [CodePen][5], or a link to your live site so that we can view a live example of the problem.
 
 **5. Share as much information as possible.** Include browser version affected, your OS, version of the library, steps to reproduce, etc. "X isn't working!!!1!" will probably just be closed.
 
 
 ## Pixi and Phaser
 
-It's important to understand that internally Phaser 2 uses a heavily customized version of [Pixi.js v2](https://github.com/GoodBoyDigital/pixi.js/) for all rendering. It's possible you may find a bug that is generated on the Pixi level rather than Phaser. You're welcome to still report the issue of course, but if you get a reply saying we think it might be a Pixi issue, this is what we're talking about :)
+Phaser doesn't use Pixi anymore.
 
 
 ## Support Forum
@@ -29,7 +29,7 @@ It's important to understand that internally Phaser 2 uses a heavily customized 
 We have a very active [Phaser Support Forum][4]. If you need general support, or are struggling to understand how to do something or need your code checked over, then we would urge you to post it to our forum. There are a lot of friendly devs in there who can help, as well as the core Phaser and Pixi teams, so it's a great place to get support from. You're welcome to report bugs directly on GitHub, but for general support we'd always recommend using the forum first.
 
 
-##Making Changes
+## Making Changes
 
 To take advantage of our grunt build script and jshint config it will be easiest for you if you have node.js and grunt installed locally.
 
@@ -73,4 +73,5 @@ Thanks to Chad for creating the original Pixi.js Contributing file which we adap
 [1]: http://jsfiddle.net
 [2]: http://jsbin.com/
 [3]: http://nodejs.org
-[4]: http://www.html5gamedevs.com/forum/14-phaser/
+[4]: http://www.html5gamedevs.com/forum/33-phaser-3/
+[5]: https://codepen.io/pen?template=YeEWom "Phaser 3 game template"

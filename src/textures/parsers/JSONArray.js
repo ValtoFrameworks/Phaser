@@ -1,11 +1,30 @@
+/**
+ * @author       Richard Davey <rich@photonstorm.com>
+ * @copyright    2018 Photon Storm Ltd.
+ * @license      {@link https://github.com/photonstorm/phaser/blob/master/license.txt|MIT License}
+ */
+
 var Clone = require('../../utils/object/Clone');
 
+/**
+ * Parses a Texture Atlas JSON Array and adds the Frames to the Texture.
+ * JSON format expected to match that defined by Texture Packer, with the frames property containing an array of Frames.
+ *
+ * @function Phaser.Textures.Parsers.JSONArray
+ * @since 3.0.0
+ *
+ * @param {Phaser.Textures.Texture} texture - The Texture to add the Frames to.
+ * @param {integer} sourceIndex - The index of the TextureSource.
+ * @param {object} json - The JSON data.
+ *
+ * @return {Phaser.Textures.Texture} The Texture modified by this parser.
+ */
 var JSONArray = function (texture, sourceIndex, json)
 {
     //  Malformed?
-    if (!json['frames'])
+    if (!json['frames'] && !json['textures'])
     {
-        console.warn('Invalid Texture Atlas JSON Array given, missing \'frames\' array');
+        console.warn('Invalid Texture Atlas JSON Array given, missing \'frames\' and \'textures\' array');
         return;
     }
 
@@ -15,7 +34,8 @@ var JSONArray = function (texture, sourceIndex, json)
     texture.add('__BASE', sourceIndex, 0, 0, source.width, source.height);
 
     //  By this stage frames is a fully parsed array
-    var frames = json['frames'];
+    var frames = (Array.isArray(json.textures)) ? json.textures[0].frames : json.frames;
+
     var newFrame;
 
     for (var i = 0; i < frames.length; i++)
@@ -42,6 +62,13 @@ var JSONArray = function (texture, sourceIndex, json)
         {
             newFrame.rotated = true;
             newFrame.updateUVsInverted();
+        }
+
+        if (src.anchor)
+        {
+            newFrame.customPivot = true;
+            newFrame.pivotX = src.anchor.x;
+            newFrame.pivotY = src.anchor.y;
         }
 
         //  Copy over any extra data

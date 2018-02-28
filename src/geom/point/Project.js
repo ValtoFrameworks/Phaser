@@ -1,4 +1,9 @@
-var Dot = require('./Dot');
+/**
+ * @author       Richard Davey <rich@photonstorm.com>
+ * @copyright    2018 Photon Storm Ltd.
+ * @license      {@link https://github.com/photonstorm/phaser/blob/master/license.txt|MIT License}
+ */
+
 var Point = require('./Point');
 var GetMagnitudeSq = require('./GetMagnitudeSq');
 
@@ -18,7 +23,8 @@ var Project = function (pointA, pointB, out)
 {
     if (out === undefined) { out = new Point(); }
 
-    var amt = Dot(pointA, pointB) / GetMagnitudeSq(pointB);
+    var dot = ((pointA.x * pointB.x) + (pointA.y * pointB.y));
+    var amt = dot / GetMagnitudeSq(pointB);
 
     if (amt !== 0)
     {

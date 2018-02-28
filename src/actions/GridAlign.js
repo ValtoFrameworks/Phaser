@@ -1,3 +1,9 @@
+/**
+ * @author       Richard Davey <rich@photonstorm.com>
+ * @copyright    2018 Photon Storm Ltd.
+ * @license      {@link https://github.com/photonstorm/phaser/blob/master/license.txt|MIT License}
+ */
+
 var AlignIn = require('../display/align/in/QuickSet');
 var CONST = require('../display/align/const');
 var GetValue = require('../utils/object/GetValue');
@@ -26,6 +32,7 @@ var GridAlign = function (items, options)
     var position = GetValue(options, 'position', CONST.TOP_LEFT);
     var x = GetValue(options, 'x', 0);
     var y = GetValue(options, 'y', 0);
+
     // var centerX = GetValue(options, 'centerX', null);
     // var centerY = GetValue(options, 'centerY', null);
 
@@ -37,7 +44,7 @@ var GridAlign = function (items, options)
     //  If the Grid is centered on a position then we need to calculate it now
     // if (centerX !== null && centerY !== null)
     // {
-        // 
+    // 
     // }
 
     tempZone.setPosition(x, y);

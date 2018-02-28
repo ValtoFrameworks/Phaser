@@ -1,10 +1,26 @@
+/**
+ * @author       Richard Davey <rich@photonstorm.com>
+ * @copyright    2018 Photon Storm Ltd.
+ * @license      {@link https://github.com/photonstorm/phaser/blob/master/license.txt|MIT License}
+ */
+
 var BuildGameObject = require('../BuildGameObject');
 var GameObjectCreator = require('../GameObjectCreator');
 var GetAdvancedValue = require('../../utils/object/GetAdvancedValue');
 var TileSprite = require('./TileSprite');
 
-//  When registering a factory function 'this' refers to the GameObjectCreator context.
-
+/**
+ * Creates a new TileSprite Game Object and returns it.
+ *
+ * Note: This method will only be available if the TileSprite Game Object has been built into Phaser.
+ *
+ * @method Phaser.GameObjects.GameObjectCreator#tileSprite
+ * @since 3.0.0
+ *
+ * @param {object} config - [description]
+ *
+ * @return {Phaser.GameObjects.TileSprite} The Game Object that was created.
+ */
 GameObjectCreator.register('tileSprite', function (config)
 {
     var x = GetAdvancedValue(config, 'x', 0);
@@ -20,3 +36,5 @@ GameObjectCreator.register('tileSprite', function (config)
 
     return tile;
 });
+
+//  When registering a factory function 'this' refers to the GameObjectCreator context.

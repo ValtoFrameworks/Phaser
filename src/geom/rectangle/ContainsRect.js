@@ -1,3 +1,9 @@
+/**
+ * @author       Richard Davey <rich@photonstorm.com>
+ * @copyright    2018 Photon Storm Ltd.
+ * @license      {@link https://github.com/photonstorm/phaser/blob/master/license.txt|MIT License}
+ */
+
 //  Checks if rectB is fully contained within rectA
 
 /**
@@ -22,7 +28,7 @@ var ContainsRect = function (rectA, rectB)
     return (
         (rectB.x > rectA.x && rectB.x < rectA.right) &&
         (rectB.right > rectA.x && rectB.right < rectA.right) &&
-        (rectB.y > rectA.y && rectB.y < rectA.bottom) && 
+        (rectB.y > rectA.y && rectB.y < rectA.bottom) &&
         (rectB.bottom > rectA.y && rectB.bottom < rectA.bottom)
     );
 };

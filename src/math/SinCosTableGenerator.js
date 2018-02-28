@@ -1,4 +1,23 @@
+/**
+ * @author       Richard Davey <rich@photonstorm.com>
+ * @copyright    2018 Photon Storm Ltd.
+ * @license      {@link https://github.com/photonstorm/phaser/blob/master/license.txt|MIT License}
+ */
 
+
+/**
+ * [description]
+ *
+ * @function Phaser.Math.SinCosTableGenerator
+ * @since 3.0.0
+ *
+ * @param {number} length - [description]
+ * @param {number} sinAmp - [description]
+ * @param {number} cosAmp - [description]
+ * @param {number} frequency - [description]
+ *
+ * @return {object} [description]
+ */
 var SinCosTableGenerator = function (length, sinAmp, cosAmp, frequency)
 {
     if (sinAmp === undefined) { sinAmp = 1; }

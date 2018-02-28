@@ -1,7 +1,25 @@
+/**
+ * @author       Richard Davey <rich@photonstorm.com>
+ * @copyright    2018 Photon Storm Ltd.
+ * @license      {@link https://github.com/photonstorm/phaser/blob/master/license.txt|MIT License}
+ */
+
+var BlendModes = require('../renderer/BlendModes');
 var GetAdvancedValue = require('../utils/object/GetAdvancedValue');
 var ScaleModes = require('../renderer/ScaleModes');
-var BlendModes = require('../renderer/BlendModes');
 
+/**
+ * Builds a Game Object using the provided configuration object.
+ *
+ * @function Phaser.Gameobjects.BuildGameObject
+ * @since 3.0.0
+ *
+ * @param {Phaser.Scene} scene - [description]
+ * @param {Phaser.GameObjects.GameObject} gameObject - [description]
+ * @param {object} config - [description]
+ *
+ * @return {Phaser.GameObjects.GameObject} The built Game Object.
+ */
 var BuildGameObject = function (scene, gameObject, config)
 {
     //  Position

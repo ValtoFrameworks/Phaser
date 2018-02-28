@@ -1,9 +1,17 @@
+/**
+ * @author       Richard Davey <rich@photonstorm.com>
+ * @copyright    2018 Photon Storm Ltd.
+ * @license      {@link https://github.com/photonstorm/phaser/blob/master/license.txt|MIT License}
+ */
+
 require('./polyfills');
 
 var CONST = require('./const');
 var Extend = require('./utils/object/Extend');
 
-//  This object is exported globally
+/**
+* @namespace Phaser
+*/
 
 var Phaser = {
 
@@ -14,6 +22,7 @@ var Phaser = {
     Class: require('./utils/Class'),
     Create: require('./create'),
     Curves: require('./curves'),
+    Data: require('./data'),
     Display: require('./display'),
     DOM: require('./dom'),
     EventEmitter: require('./events/EventEmitter'),
@@ -29,6 +38,7 @@ var Phaser = {
     Sound: require('./sound'),
     Structs: require('./structs'),
     Textures: require('./textures'),
+    Tilemaps: require('./tilemaps'),
     Time: require('./time'),
     Tweens: require('./tweens'),
     Utils: require('./utils')
@@ -49,10 +59,4 @@ global.Phaser = Phaser;
  * "Documentation is like sex:  when it is good, it is very, very good;
  * and when it is bad, it is better than nothing."
  *  -- Dick Brandon
- */
-
-/*
- * "Sometimes, the elegant implementation is just a function.
- * Not a method. Not a class. Not a framework. Just a function."
- *  -- John Carmack
  */

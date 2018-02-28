@@ -1,3 +1,9 @@
+/**
+ * @author       Richard Davey <rich@photonstorm.com>
+ * @copyright    2018 Photon Storm Ltd.
+ * @license      {@link https://github.com/photonstorm/phaser/blob/master/license.txt|MIT License}
+ */
+
 var Class = require('../../../utils/Class');
 var Components = require('../../components');
 var GameObject = require('../../GameObject');
@@ -6,6 +12,35 @@ var ParseFromAtlas = require('../ParseFromAtlas');
 var ParseRetroFont = require('../ParseRetroFont');
 var Render = require('./BitmapTextRender');
 
+/**
+ * @classdesc
+ * [description]
+ *
+ * @class BitmapText
+ * @extends Phaser.GameObjects.GameObject
+ * @memberOf Phaser.GameObjects
+ * @constructor
+ * @since 3.0.0
+ *
+ * @extends Phaser.GameObjects.Components.Alpha
+ * @extends Phaser.GameObjects.Components.BlendMode
+ * @extends Phaser.GameObjects.Components.Depth
+ * @extends Phaser.GameObjects.Components.Origin
+ * @extends Phaser.GameObjects.Components.Pipeline
+ * @extends Phaser.GameObjects.Components.ScaleMode
+ * @extends Phaser.GameObjects.Components.Texture
+ * @extends Phaser.GameObjects.Components.Tint
+ * @extends Phaser.GameObjects.Components.Transform
+ * @extends Phaser.GameObjects.Components.Visible
+ * @extends Phaser.GameObjects.Components.ScrollFactor
+ *
+ * @param {Phaser.Scene} scene - The Scene to which this Game Object belongs. It can only belong to one Scene at any given time.
+ * @param {number} [x=0] - The x coordinate of this Game Object in world space.
+ * @param {number} [y=0] - The y coordinate of this Game Object in world space.
+ * @param {string} font - [description]
+ * @param {string|string[]} [text] - [description]
+ * @param {number} [size] - [description]
+ */
 var BitmapText = new Class({
 
     Extends: GameObject,
@@ -13,8 +48,9 @@ var BitmapText = new Class({
     Mixins: [
         Components.Alpha,
         Components.BlendMode,
+        Components.Depth,
         Components.Origin,
-        Components.RenderTarget,
+        Components.Pipeline,
         Components.ScaleMode,
         Components.Texture,
         Components.Tint,
@@ -32,23 +68,70 @@ var BitmapText = new Class({
 
         GameObject.call(this, scene, 'BitmapText');
 
+        /**
+         * [description]
+         *
+         * @name Phaser.GameObjects.BitmapText#font
+         * @type {string}
+         * @since 3.0.0
+         */
         this.font = font;
 
         var entry = this.scene.sys.cache.bitmapFont.get(font);
 
+        /**
+         * [description]
+         *
+         * @name Phaser.GameObjects.BitmapText#fontData
+         * @type {object}
+         * @since 3.0.0
+         */
         this.fontData = entry.data;
 
+        /**
+         * [description]
+         *
+         * @name Phaser.GameObjects.BitmapText#text
+         * @type {string}
+         * @since 3.0.0
+         */
         this.text = (Array.isArray(text)) ? text.join('\n') : text;
 
+        /**
+         * [description]
+         *
+         * @name Phaser.GameObjects.BitmapText#fontSize
+         * @type {number}
+         * @since 3.0.0
+         */
         this.fontSize = size || this.fontData.size;
 
         this.setTexture(entry.texture, entry.frame);
         this.setPosition(x, y);
         this.setOrigin(0, 0);
+        this.initPipeline('TextureTintPipeline');
 
+        /**
+         * [description]
+         *
+         * @name Phaser.GameObjects.BitmapText#_bounds
+         * @type {object}
+         * @private
+         * @since 3.0.0
+         */
         this._bounds = this.getTextBounds();
     },
 
+    /**
+     * [description]
+     *
+     * @method Phaser.GameObjects.BitmapText#setFontSize
+     * @since 3.0.0
+     *
+     * @param {number} size - [description]
+     *
+     * @return {Phaser.GameObjects.BitmapText} This Game Object.
+     */
     setFontSize: function (size)
     {
         this.fontSize = size;
@@ -56,9 +139,32 @@ var BitmapText = new Class({
         return this;
     },
 
-    setText: function (text)
+    /**
+     * [description]
+     *
+     * @method Phaser.GameObjects.BitmapText#setText
+     * @since 3.0.0
+     *
+     * @param {string|string[]} value - The string, or array of strings, to be set as the content of this BitmapText.
+     *
+     * @return {Phaser.GameObjects.BitmapText} This Game Object.
+     */
+    setText: function (value)
     {
-        this.text = text;
+        if (!value && value !== 0)
+        {
+            value = '';
+        }
+
+        if (Array.isArray(value))
+        {
+            value = value.join('\n');
+        }
+
+        if (value !== this.text)
+        {
+            this.text = value.toString();
+        }
 
         return this;
     },
@@ -78,6 +184,16 @@ var BitmapText = new Class({
     //     }
     // }
 
+    /**
+     * [description]
+     *
+     * @method Phaser.GameObjects.BitmapText#getTextBounds
+     * @since 3.0.0
+     *
+     * @param {boolean} round - [description]
+     *
+     * @return {object} [description]
+     */
     getTextBounds: function (round)
     {
         //  local = the BitmapText based on fontSize and 0x0 coords
@@ -88,6 +204,13 @@ var BitmapText = new Class({
         return this._bounds;
     },
 
+    /**
+     * [description]
+     * 
+     * @name Phaser.GameObjects.BitmapText#width
+     * @type {number}
+     * @since 3.0.0
+     */
     width: {
 
         get: function ()
@@ -98,6 +221,13 @@ var BitmapText = new Class({
 
     },
 
+    /**
+     * [description]
+     * 
+     * @name Phaser.GameObjects.BitmapText#height
+     * @type {number}
+     * @since 3.0.0
+     */
     height: {
 
         get: function ()
@@ -108,6 +238,14 @@ var BitmapText = new Class({
 
     },
 
+    /**
+     * [description]
+     *
+     * @method Phaser.GameObjects.BitmapText#toJSON
+     * @since 3.0.0
+     *
+     * @return {object} [description]
+     */
     toJSON: function ()
     {
         var out = Components.ToJSON(this);

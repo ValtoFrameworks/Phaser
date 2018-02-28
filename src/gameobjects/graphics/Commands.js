@@ -1,4 +1,15 @@
+/**
+ * @author       Richard Davey <rich@photonstorm.com>
+ * @copyright    2018 Photon Storm Ltd.
+ * @license      {@link https://github.com/photonstorm/phaser/blob/master/license.txt|MIT License}
+ */
+
+/**
+ * @namespace Phaser.GameObjects.Graphics.Commands
+ */
+
 module.exports = {
+
     ARC: 0,
     BEGIN_PATH: 1,
     CLOSE_PATH: 2,
@@ -18,4 +29,5 @@ module.exports = {
     TRANSLATE: 16,
     SCALE: 17,
     ROTATE: 18
+
 };

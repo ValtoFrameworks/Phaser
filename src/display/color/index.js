@@ -1,10 +1,17 @@
-//  Phaser.Display.Color
+/**
+ * @author       Richard Davey <rich@photonstorm.com>
+ * @copyright    2018 Photon Storm Ltd.
+ * @license      {@link https://github.com/photonstorm/phaser/blob/master/license.txt|MIT License}
+ */
+
+/**
+ * @namespace Phaser.Display.Color
+ */
 
 var Color = require('./Color');
 
 Color.ColorToRGBA = require('./ColorToRGBA');
 Color.ComponentToHex = require('./ComponentToHex');
-Color.CSSToColor = require('./CSSToColor');
 Color.GetColor = require('./GetColor');
 Color.GetColor32 = require('./GetColor32');
 Color.HexStringToColor = require('./HexStringToColor');

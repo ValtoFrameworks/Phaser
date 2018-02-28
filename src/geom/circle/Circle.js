@@ -1,25 +1,36 @@
+/**
+ * @author       Richard Davey <rich@photonstorm.com>
+ * @copyright    2018 Photon Storm Ltd.
+ * @license      {@link https://github.com/photonstorm/phaser/blob/master/license.txt|MIT License}
+ */
+
 var Class = require('../../utils/Class');
 var Contains = require('./Contains');
 var GetPoint = require('./GetPoint');
 var GetPoints = require('./GetPoints');
 var Random = require('./Random');
 
+/**
+ * @classdesc
+ * A Circle object.
+ *
+ * This is a geometry object, containing numerical values and related methods to inspect and modify them.
+ * It is not a Game Object, in that you cannot add it to the display list, and it has no texture.
+ * To render a Circle you should look at the capabilities of the Graphics class.
+ *
+ * @class Circle
+ * @memberOf Phaser.Geom
+ * @constructor
+ * @since 3.0.0
+ *
+ * @param {number} [x=0] - The x position of the center of the circle.
+ * @param {number} [y=0] - The y position of the center of the circle.
+ * @param {number} [radius=0] - The radius of the circle.
+ */
 var Circle = new Class({
 
     initialize:
 
-    /**
-     * [description]
-     *
-     * @class Circle
-     * @memberOf Phaser.Geom
-     * @constructor
-     * @since 3.0.0
-     *
-     * @param {number} [x=0] - [description]
-     * @param {number} [y=0] - [description]
-     * @param {number} [radius=0] - [description]
-     */
     function Circle (x, y, radius)
     {
         if (x === undefined) { x = 0; }
@@ -27,59 +38,107 @@ var Circle = new Class({
         if (radius === undefined) { radius = 0; }
 
         /**
-         * [description]
+         * The x position of the center of the circle.
          *
-         * @property {number} x
+         * @name Phaser.Geom.Circle#x
+         * @type {number}
+         * @default 0
+         * @since 3.0.0
          */
         this.x = x;
 
         /**
-         * [description]
+         * The y position of the center of the circle.
          *
-         * @property {number} y
+         * @name Phaser.Geom.Circle#y
+         * @type {number}
+         * @default 0
+         * @since 3.0.0
          */
         this.y = y;
 
         /**
-         * [description]
+         * The internal radius of the circle.
          *
-         * @property {number} _radius
+         * @name Phaser.Geom.Circle#_radius
+         * @type {number}
          * @private
+         * @since 3.0.0
          */
         this._radius = radius;
 
         /**
-         * [description]
+         * The internal diameter of the circle.
          *
-         * @property {number} _diameter
+         * @name Phaser.Geom.Circle#_diameter
+         * @type {number}
          * @private
+         * @since 3.0.0
          */
         this._diameter = radius * 2;
     },
 
+    /**
+     * Check to see if the Circle contains the given x / y coordinates.
+     *
+     * @method Phaser.Geom.Circle#contains
+     * @since 3.0.0
+     *
+     * @param {number} x - The x coordinate to check within the circle.
+     * @param {number} y - The y coordinate to check within the circle.
+     *
+     * @return {boolean} True if the coordinates are within the circle, otherwise false.
+     */
     contains: function (x, y)
     {
         return Contains(this, x, y);
     },
 
+    /**
+     * Returns a Point object containing the coordinates of a point on the circumference of the Circle
+     * based on the given angle normalized to the range 0 to 1. I.e. a value of 0.5 will give the point
+     * at 180 degrees around the circle.
+     *
+     * @method Phaser.Geom.Circle#getPoint
+     * @since 3.0.0
+     *
+     * @param {float} position - A value between 0 and 1, where 0 equals 0 degrees, 0.5 equals 180 degrees and 1 equals 360 around the circle.
+     * @param {Phaser.Geom.Point|object} [out] - An object to store the return values in. If not given a Point object will be created.
+     *
+     * @return {Phaser.Geom.Point|object} A Point, or point-like object, containing the coordinates of the point around the circle.
+     */
     getPoint: function (position, point)
     {
         return GetPoint(this, position, point);
     },
 
+    /**
+     * Returns an array of Point objects containing the coordinates of the points around the circumference of the Circle,
+     * based on the given quantity or stepRate values.
+     *
+     * @method Phaser.Geom.Circle#getPoints
+     * @since 3.0.0
+     *
+     * @param {integer} quantity - The amount of points to return. If a falsey value the quantity will be derived from the `stepRate` instead.
+     * @param {number} [stepRate] - Sets the quantity by getting the circumference of the circle and dividing it by the stepRate.
+     * @param {array} [output] - An array to insert the points in to. If not provided a new array will be created.
+     *
+     * @return {Phaser.Geom.Point[]} An array of Point objects pertaining to the points around the circumference of the circle.
+     */
     getPoints: function (quantity, stepRate, output)
     {
         return GetPoints(this, quantity, stepRate, output);
     },
 
     /**
-     * [description]
+     * Returns a uniformly distributed random point from anywhere within the Circle.
      *
      * @method Phaser.Geom.Circle#getRandomPoint
+     * @since 3.0.0
      *
-     * @param {Phaser.Geom.Point|object} point - [description]
+     * @param {Phaser.Geom.Point|object} [point] - A Point or point-like object to set the random `x` and `y` values in.
      *
-     * @return {Phaser.Geom.Point|object} [description]
+     * @return {Phaser.Geom.Point|object} A Point object with the random values set in the `x` and `y` properties.
      */
     getRandomPoint: function (point)
     {
@@ -87,15 +146,16 @@ var Circle = new Class({
     },
 
     /**
-     * [description]
+     * Sets the x, y and radius of this circle.
      *
      * @method Phaser.Geom.Circle#setTo
+     * @since 3.0.0
      *
-     * @param {number} x - [description]
-     * @param {number} y - [description]
-     * @param {number} radius - [description]
-     * 
-     * @return {Phaser.Geom.Circle} [description]
+     * @param {number} [x=0] - The x position of the center of the circle.
+     * @param {number} [y=0] - The y position of the center of the circle.
+     * @param {number} [radius=0] - The radius of the circle.
+     *
+     * @return {Phaser.Geom.Circle} This Circle object.
      */
     setTo: function (x, y, radius)
     {
@@ -108,26 +168,32 @@ var Circle = new Class({
     },
 
     /**
-     * [description]
+     * Sets this Circle to be empty with a radius of zero.
+     * Does not change its position.
      *
      * @method Phaser.Geom.Circle#setEmpty
-     * 
-     * @return {Phaser.Geom.Circle} [description]
+     * @since 3.0.0
+     *
+     * @return {Phaser.Geom.Circle} This Circle object.
      */
     setEmpty: function ()
     {
-        return this.setTo(0, 0, 0);
+        this._radius = 0;
+        this._diameter = 0;
+
+        return this;
     },
 
     /**
-     * [description]
+     * Sets the position of this Circle.
      *
      * @method Phaser.Geom.Circle#setPosition
+     * @since 3.0.0
      *
-     * @param {number} x - [description]
-     * @param {number} [y=x] - [description]
-     * 
-     * @return {Phaser.Geom.Circle} [description]
+     * @param {number} [x=0] - The x position of the center of the circle.
+     * @param {number} [y=0] - The y position of the center of the circle.
+     *
+     * @return {Phaser.Geom.Circle} This Circle object.
      */
     setPosition: function (x, y)
     {
@@ -140,11 +206,12 @@ var Circle = new Class({
     },
 
     /**
-     * [description]
+     * Checks to see if the Circle is empty: has a radius of zero.
      *
      * @method Phaser.Geom.Circle#isEmpty
+     * @since 3.0.0
      *
-     * @return {boolean} [description]
+     * @return {boolean} True if the Circle is empty, otherwise false.
      */
     isEmpty: function ()
     {
@@ -152,9 +219,11 @@ var Circle = new Class({
     },
 
     /**
-     * [description]
-     *
-     * @property {number} radius
+     * The radius of the Circle.
+     * 
+     * @name Phaser.Geom.Circle#radius
+     * @type {number}
+     * @since 3.0.0
      */
     radius: {
 
@@ -172,9 +241,11 @@ var Circle = new Class({
     },
 
     /**
-     * [description]
-     *
-     * @property {number} diameter
+     * The diameter of the Circle.
+     * 
+     * @name Phaser.Geom.Circle#diameter
+     * @type {number}
+     * @since 3.0.0
      */
     diameter: {
 
@@ -192,9 +263,11 @@ var Circle = new Class({
     },
 
     /**
-     * [description]
-     *
-     * @property {number} left
+     * The left position of the Circle.
+     * 
+     * @name Phaser.Geom.Circle#left
+     * @type {number}
+     * @since 3.0.0
      */
     left: {
 
@@ -211,9 +284,11 @@ var Circle = new Class({
     },
 
     /**
-     * [description]
-     *
-     * @property {number} right
+     * The right position of the Circle.
+     * 
+     * @name Phaser.Geom.Circle#right
+     * @type {number}
+     * @since 3.0.0
      */
     right: {
 
@@ -230,9 +305,11 @@ var Circle = new Class({
     },
 
     /**
-     * [description]
-     *
-     * @property {number} top
+     * The top position of the Circle.
+     * 
+     * @name Phaser.Geom.Circle#top
+     * @type {number}
+     * @since 3.0.0
      */
     top: {
 
@@ -249,9 +326,11 @@ var Circle = new Class({
     },
 
     /**
-     * [description]
-     *
-     * @property {number} bottom
+     * The bottom position of the Circle.
+     * 
+     * @name Phaser.Geom.Circle#bottom
+     * @type {number}
+     * @since 3.0.0
      */
     bottom: {
 

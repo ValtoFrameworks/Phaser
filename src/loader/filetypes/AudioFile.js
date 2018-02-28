@@ -1,12 +1,32 @@
+/**
+ * @author       Richard Davey <rich@photonstorm.com>
+ * @copyright    2018 Photon Storm Ltd.
+ * @license      {@link https://github.com/photonstorm/phaser/blob/master/license.txt|MIT License}
+ */
+
 var Class = require('../../utils/Class');
+var CONST = require('../../const');
 var File = require('../File');
 var FileTypesManager = require('../FileTypesManager');
 var GetFastValue = require('../../utils/object/GetFastValue');
-var CONST = require('../../const');
 var HTML5AudioFile = require('./HTML5AudioFile');
 
-//  Phaser.Loader.FileTypes.AudioFile
-
+/**
+ * @classdesc
+ * [description]
+ *
+ * @class AudioFile
+ * @extends Phaser.Loader.File
+ * @memberOf Phaser.Loader.FileTypes
+ * @constructor
+ * @since 3.0.0
+ *
+ * @param {string} key - [description]
+ * @param {string} url - [description]
+ * @param {string} path - [description]
+ * @param {object} xhrSettings - [description]
+ * @param {[type]} audioContext - [description]
+ */
 var AudioFile = new Class({
 
     Extends: File,
@@ -15,6 +35,12 @@ var AudioFile = new Class({
 
     function AudioFile (key, url, path, xhrSettings, audioContext)
     {
+        /**
+         * [description]
+         *
+         * @property {[type]} context
+         * @since 3.0.0
+         */
         this.context = audioContext;
 
         var fileConfig = {
@@ -30,6 +56,14 @@ var AudioFile = new Class({
         File.call(this, fileConfig);
     },
 
+    /**
+     * [description]
+     *
+     * @method Phaser.Loader.FileTypes.AudioFile#onProcess
+     * @since 3.0.0
+     *
+     * @param {[type]} callback - [description]
+     */
     onProcess: function (callback)
     {
         this.state = CONST.FILE_PROCESSING;
@@ -48,6 +82,7 @@ var AudioFile = new Class({
             },
             function (e)
             {
+                // eslint-disable-next-line no-console
                 console.error('Error with decoding audio data for \'' + this.key + '\':', e.message);
 
                 _this.state = CONST.FILE_ERRORED;
@@ -55,6 +90,8 @@ var AudioFile = new Class({
                 callback(_this);
             }
         );
+
+        this.context = null;
     }
 
 });
@@ -63,11 +100,11 @@ AudioFile.create = function (loader, key, urls, config, xhrSettings)
 {
     var game = loader.systems.game;
     var audioConfig = game.config.audio;
-    var deviceAudio = game.device.Audio;
+    var deviceAudio = game.device.audio;
 
     if ((audioConfig && audioConfig.noAudio) || (!deviceAudio.webAudio && !deviceAudio.audioData))
     {
-        console.info('Skipping loading audio \'' + key + '\' since sounds are disabled.');
+        // console.info('Skipping loading audio \'' + key + '\' since sounds are disabled.');
         return null;
     }
 
@@ -75,26 +112,38 @@ AudioFile.create = function (loader, key, urls, config, xhrSettings)
 
     if (!url)
     {
-        console.warn('No supported url provided for audio \'' + key + '\'!');
+        // console.warn('No supported url provided for audio \'' + key + '\'!');
         return null;
     }
 
     if (deviceAudio.webAudio && !(audioConfig && audioConfig.disableWebAudio))
     {
-        return new AudioFile(key, url, this.path, xhrSettings, game.sound.context);
+        return new AudioFile(key, url, loader.path, xhrSettings, game.sound.context);
     }
     else
     {
-        return new HTML5AudioFile(key, url, this.path, config, game.sound.locked);
+        return new HTML5AudioFile(key, url, loader.path, config, game.sound.locked);
     }
 };
 
-//  When registering a factory function 'this' refers to the Loader context.
-//
-//  There are several properties available to use:
-//
-//  this.scene - a reference to the Scene that owns the GameObjectFactory
-
+/**
+ * Adds an Audio file to the current load queue.
+ * 
+ * Note: This method will only be available if the Audio File type has been built into Phaser.
+ *
+ * The file is **not** loaded immediately after calling this method.
+ * Instead, the file is added to a queue within the Loader, which is processed automatically when the Loader starts.
+ *
+ * @method Phaser.Loader.LoaderPlugin#audio
+ * @since 3.0.0
+ *
+ * @param {string} key - [description]
+ * @param {string|string[]} urls - [description]
+ * @param {object} config - [description]
+ * @param {object} xhrSettings - [description]
+ * 
+ * @return {Phaser.Loader.LoaderPlugin} The Loader.
+ */
 FileTypesManager.register('audio', function (key, urls, config, xhrSettings)
 {
     var audioFile = AudioFile.create(this, key, urls, config, xhrSettings);
@@ -170,7 +219,7 @@ AudioFile.findAudioURL = function (game, urls)
         var type = url.match(/\.([a-zA-Z0-9]+)($|\?)/);
         type = GetFastValue(urls[i], 'type', type ? type[1] : '').toLowerCase();
 
-        if (game.device.Audio[type])
+        if (game.device.audio[type])
         {
             return {
                 uri: url,

@@ -1,11 +1,14 @@
+/**
+ * @author       Richard Davey <rich@photonstorm.com>
+ * @copyright    2018 Photon Storm Ltd.
+ * @license      {@link https://github.com/photonstorm/phaser/blob/master/license.txt|MIT License}
+ */
+
 var SpliceOne = require('./SpliceOne');
 
-// Removes a random object from the given array and returns it.
-// Will return null if there are no array items that fall within the specified range
-// or if there is no item for the randomly chosen index.
-
 /**
- * [description]
+ * Removes a random object from the given array and returns it.
+ * Will return null if there are no array items that fall within the specified range or if there is no item for the randomly chosen index.
  *
  * @function Phaser.Utils.Array.RemoveRandomElement
  * @since 3.0.0

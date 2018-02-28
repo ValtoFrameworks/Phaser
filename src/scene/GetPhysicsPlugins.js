@@ -1,6 +1,22 @@
+/**
+ * @author       Richard Davey <rich@photonstorm.com>
+ * @copyright    2018 Photon Storm Ltd.
+ * @license      {@link https://github.com/photonstorm/phaser/blob/master/license.txt|MIT License}
+ */
+
 var GetFastValue = require('../utils/object/GetFastValue');
 var UppercaseFirst = require('../utils/string/UppercaseFirst');
 
+/**
+ * Builds an array of which physics plugins should be activated for the given Scene.
+ *
+ * @function Phaser.Scenes.GetPhysicsPlugins
+ * @since 3.0.0
+ *
+ * @param {Phaser.Scenes.Systems} sys - [description]
+ *
+ * @return {array} [description]
+ */
 var GetPhysicsPlugins = function (sys)
 {
     var defaultSystem = sys.game.config.defaultPhysicsSystem;

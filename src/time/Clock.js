@@ -1,16 +1,46 @@
+/**
+ * @author       Richard Davey <rich@photonstorm.com>
+ * @copyright    2018 Photon Storm Ltd.
+ * @license      {@link https://github.com/photonstorm/phaser/blob/master/license.txt|MIT License}
+ */
+
 var Class = require('../utils/Class');
-var PluginManager = require('../plugins/PluginManager');
+var PluginManager = require('../boot/PluginManager');
 var TimerEvent = require('./TimerEvent');
 
+/**
+ * @classdesc
+ * [description]
+ *
+ * @class Clock
+ * @memberOf Phaser.Time
+ * @constructor
+ * @since 3.0.0
+ *
+ * @param {Phaser.Scene} scene - [description]
+ */
 var Clock = new Class({
 
     initialize:
 
     function Clock (scene)
     {
-        //  The Scene that owns this plugin
+        /**
+         * [description]
+         *
+         * @name Phaser.Time.Clock#scene
+         * @type {Phaser.Scene}
+         * @since 3.0.0
+         */
         this.scene = scene;
 
+        /**
+         * [description]
+         *
+         * @name Phaser.Time.Clock#systems
+         * @type {Phaser.Scenes.Systems}
+         * @since 3.0.0
+         */
         this.systems = scene.sys;
 
         if (!scene.sys.settings.isBooted)
@@ -18,19 +48,78 @@ var Clock = new Class({
             scene.sys.events.once('boot', this.boot, this);
         }
 
+        /**
+         * [description]
+         *
+         * @name Phaser.Time.Clock#now
+         * @type {number}
+         * @since 3.0.0
+         */
         this.now = Date.now();
 
         //  Scale the delta time coming into the Clock by this factor
         //  which then influences anything using this Clock for calculations, like TimerEvents
+
+        /**
+         * [description]
+         *
+         * @name Phaser.Time.Clock#timeScale
+         * @type {float}
+         * @default 1
+         * @since 3.0.0
+         */
         this.timeScale = 1;
 
+        /**
+         * [description]
+         *
+         * @name Phaser.Time.Clock#paused
+         * @type {boolean}
+         * @default false
+         * @since 3.0.0
+         */
         this.paused = false;
 
+        /**
+         * [description]
+         *
+         * @name Phaser.Time.Clock#_active
+         * @type {Phaser.Time.TimerEvent[]}
+         * @private
+         * @default []
+         * @since 3.0.0
+         */
         this._active = [];
+
+        /**
+         * [description]
+         *
+         * @name Phaser.Time.Clock#_pendingInsertion
+         * @type {Phaser.Time.TimerEvent[]}
+         * @private
+         * @default []
+         * @since 3.0.0
+         */
         this._pendingInsertion = [];
+
+        /**
+         * [description]
+         *
+         * @name Phaser.Time.Clock#_pendingRemoval
+         * @type {Phaser.Time.TimerEvent[]}
+         * @private
+         * @default []
+         * @since 3.0.0
+         */
         this._pendingRemoval = [];
     },
 
+    /**
+     * [description]
+     *
+     * @method Phaser.Time.Clock#boot
+     * @since 3.0.0
+     */
     boot: function ()
     {
         var eventEmitter = this.systems.events;
@@ -41,6 +130,16 @@ var Clock = new Class({
         eventEmitter.on('destroy', this.destroy, this);
     },
 
+    /**
+     * [description]
+     *
+     * @method Phaser.Time.Clock#addEvent
+     * @since 3.0.0
+     *
+     * @param {object} config - [description]
+     *
+     * @return {Phaser.Time.TimerEvent} [description]
+     */
     addEvent: function (config)
     {
         var event = new TimerEvent(config);
@@ -50,16 +149,47 @@ var Clock = new Class({
         return event;
     },
 
+    /**
+     * [description]
+     *
+     * @method Phaser.Time.Clock#delayedCall
+     * @since 3.0.0
+     *
+     * @param {number} delay - [description]
+     * @param {function} callback - [description]
+     * @param {array} args - [description]
+     * @param {object} callbackScope - [description]
+     *
+     * @return {[type]} [description]
+     */
     delayedCall: function (delay, callback, args, callbackScope)
     {
         return this.addEvent({ delay: delay, callback: callback, args: args, callbackScope: callbackScope });
     },
 
+    /**
+     * [description]
+     *
+     * @method Phaser.Time.Clock#clearPendingEvents
+     * @since 3.0.0
+     * 
+     * @return {Phaser.Time.Clock} [description]
+     */
     clearPendingEvents: function ()
     {
         this._pendingInsertion = [];
+
+        return this;
     },
 
+    /**
+     * [description]
+     *
+     * @method Phaser.Time.Clock#removeAllEvents
+     * @since 3.0.0
+     *
+     * @return {Phaser.Time.Clock} [description]
+     */
     removeAllEvents: function ()
     {
         this._pendingRemoval = this._pendingRemoval.concat(this._active);
@@ -67,7 +197,16 @@ var Clock = new Class({
         return this;
     },
 
-    preUpdate: function (time, delta)
+    /**
+     * [description]
+     *
+     * @method Phaser.Time.Clock#preUpdate
+     * @since 3.0.0
+     *
+     * @param {number} time - [description]
+     * @param {number} delta - [description]
+     */
+    preUpdate: function ()
     {
         var toRemove = this._pendingRemoval.length;
         var toInsert = this._pendingInsertion.length;
@@ -101,8 +240,6 @@ var Clock = new Class({
         {
             event = this._pendingInsertion[i];
 
-            event.elapsed = event.startAt * event.timeScale;
-
             this._active.push(event);
         }
 
@@ -111,6 +248,15 @@ var Clock = new Class({
         this._pendingInsertion.length = 0;
     },
 
+    /**
+     * [description]
+     *
+     * @method Phaser.Time.Clock#update
+     * @since 3.0.0
+     *
+     * @param {number} time - [description]
+     * @param {number} delta - [description]
+     */
     update: function (time, delta)
     {
         this.now = time;
@@ -120,7 +266,7 @@ var Clock = new Class({
             return;
         }
 
-        delta * this.timeScale;
+        delta *= this.timeScale;
 
         for (var i = 0; i < this._active.length; i++)
         {
@@ -166,7 +312,12 @@ var Clock = new Class({
         }
     },
 
-    //  Scene that owns this Clock is shutting down
+    /**
+     * [description]
+     *
+     * @method Phaser.Time.Clock#shutdown
+     * @since 3.0.0
+     */
     shutdown: function ()
     {
         var i;
@@ -191,7 +342,12 @@ var Clock = new Class({
         this._pendingInsertion.length = 0;
     },
 
-    //  Game level nuke
+    /**
+     * [description]
+     *
+     * @method Phaser.Time.Clock#destroy
+     * @since 3.0.0
+     */
     destroy: function ()
     {
         this.shutdown();

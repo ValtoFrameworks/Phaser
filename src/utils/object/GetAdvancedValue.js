@@ -1,3 +1,9 @@
+/**
+ * @author       Richard Davey <rich@photonstorm.com>
+ * @copyright    2018 Photon Storm Ltd.
+ * @license      {@link https://github.com/photonstorm/phaser/blob/master/license.txt|MIT License}
+ */
+
 var MATH = require('../../math/const');
 var GetValue = require('./GetValue');
 
@@ -28,6 +34,18 @@ var GetValue = require('./GetValue');
 //      x: { randFloat: [min, max] }
 //  }
 
+/**
+ * [description]
+ *
+ * @function Phaser.Utils.Object.GetAdvancedValue
+ * @since 3.0.0
+ *
+ * @param {object} source - [description]
+ * @param {string} key - [description]
+ * @param {any} defaultValue - [description]
+ *
+ * @return {any} [description]
+ */
 var GetAdvancedValue = function (source, key, defaultValue)
 {
     var value = GetValue(source, key, null);

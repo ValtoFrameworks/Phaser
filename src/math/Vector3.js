@@ -1,14 +1,60 @@
+/**
+ * @author       Richard Davey <rich@photonstorm.com>
+ * @copyright    2018 Photon Storm Ltd.
+ * @license      {@link https://github.com/photonstorm/phaser/blob/master/license.txt|MIT License}
+ */
+
 //  Adapted from [gl-matrix](https://github.com/toji/gl-matrix) by toji 
 //  and [vecmath](https://github.com/mattdesl/vecmath) by mattdesl
 
 var Class = require('../utils/Class');
 
+/**
+ * @classdesc
+ * [description]
+ *
+ * @class Vector3
+ * @memberOf Phaser.Math
+ * @constructor
+ * @since 3.0.0
+ *
+ * @param {number} [x] - [description]
+ * @param {number} [y] - [description]
+ * @param {number} [z] - [description]
+ */
 var Vector3 = new Class({
 
     initialize:
 
     function Vector3 (x, y, z)
     {
+        /**
+         * The x component of this Vector.
+         *
+         * @name Phaser.Math.Vector3#x
+         * @type {number}
+         * @default 0
+         * @since 3.0.0
+         */
+
+        /**
+         * The y component of this Vector.
+         *
+         * @name Phaser.Math.Vector3#y
+         * @type {number}
+         * @default 0
+         * @since 3.0.0
+         */
+
+        /**
+         * The z component of this Vector.
+         *
+         * @name Phaser.Math.Vector3#z
+         * @type {number}
+         * @default 0
+         * @since 3.0.0
+         */
+
         if (typeof x === 'object')
         {
             this.x = x.x || 0;
@@ -23,6 +69,14 @@ var Vector3 = new Class({
         }
     },
 
+    /**
+     * [description]
+     *
+     * @method Phaser.Math.Vector3#up
+     * @since 3.0.0
+     *
+     * @return {[type]} [description]
+     */
     up: function ()
     {
         this.x = 0;
@@ -32,11 +86,30 @@ var Vector3 = new Class({
         return this;
     },
 
+    /**
+     * [description]
+     *
+     * @method Phaser.Math.Vector3#clone
+     * @since 3.0.0
+     *
+     * @return {[type]} [description]
+     */
     clone: function ()
     {
         return new Vector3(this.x, this.y, this.z);
     },
 
+    /**
+     * [description]
+     *
+     * @method Phaser.Math.Vector3#crossVectors
+     * @since 3.0.0
+     *
+     * @param {[type]} a - [description]
+     * @param {[type]} b - [description]
+     *
+     * @return {[type]} [description]
+     */
     crossVectors: function (a, b)
     {
         var ax = a.x;
@@ -53,11 +126,31 @@ var Vector3 = new Class({
         return this;
     },
 
+    /**
+     * [description]
+     *
+     * @method Phaser.Math.Vector3#equals
+     * @since 3.0.0
+     *
+     * @param {[type]} v - [description]
+     *
+     * @return {[type]} [description]
+     */
     equals: function (v)
     {
         return ((this.x === v.x) && (this.y === v.y) && (this.z === v.z));
     },
 
+    /**
+     * [description]
+     *
+     * @method Phaser.Math.Vector3#copy
+     * @since 3.0.0
+     *
+     * @param {[type]} src - [description]
+     *
+     * @return {[type]} [description]
+     */
     copy: function (src)
     {
         this.x = src.x;
@@ -67,6 +160,18 @@ var Vector3 = new Class({
         return this;
     },
 
+    /**
+     * [description]
+     *
+     * @method Phaser.Math.Vector3#set
+     * @since 3.0.0
+     *
+     * @param {[type]} x - [description]
+     * @param {[type]} y - [description]
+     * @param {[type]} z - [description]
+     *
+     * @return {[type]} [description]
+     */
     set: function (x, y, z)
     {
         if (typeof x === 'object')
@@ -85,6 +190,16 @@ var Vector3 = new Class({
         return this;
     },
 
+    /**
+     * [description]
+     *
+     * @method Phaser.Math.Vector3#add
+     * @since 3.0.0
+     *
+     * @param {[type]} v - [description]
+     *
+     * @return {[type]} [description]
+     */
     add: function (v)
     {
         this.x += v.x;
@@ -94,6 +209,16 @@ var Vector3 = new Class({
         return this;
     },
 
+    /**
+     * [description]
+     *
+     * @method Phaser.Math.Vector3#subtract
+     * @since 3.0.0
+     *
+     * @param {[type]} v - [description]
+     *
+     * @return {[type]} [description]
+     */
     subtract: function (v)
     {
         this.x -= v.x;
@@ -103,6 +228,16 @@ var Vector3 = new Class({
         return this;
     },
 
+    /**
+     * [description]
+     *
+     * @method Phaser.Math.Vector3#multiply
+     * @since 3.0.0
+     *
+     * @param {[type]} v - [description]
+     *
+     * @return {[type]} [description]
+     */
     multiply: function (v)
     {
         this.x *= v.x;
@@ -112,6 +247,16 @@ var Vector3 = new Class({
         return this;
     },
 
+    /**
+     * [description]
+     *
+     * @method Phaser.Math.Vector3#scale
+     * @since 3.0.0
+     *
+     * @param {[type]} scale - [description]
+     *
+     * @return {[type]} [description]
+     */
     scale: function (scale)
     {
         if (isFinite(scale))
@@ -130,6 +275,16 @@ var Vector3 = new Class({
         return this;
     },
 
+    /**
+     * [description]
+     *
+     * @method Phaser.Math.Vector3#divide
+     * @since 3.0.0
+     *
+     * @param {[type]} v - [description]
+     *
+     * @return {[type]} [description]
+     */
     divide: function (v)
     {
         this.x /= v.x;
@@ -139,6 +294,14 @@ var Vector3 = new Class({
         return this;
     },
 
+    /**
+     * [description]
+     *
+     * @method Phaser.Math.Vector3#negate
+     * @since 3.0.0
+     *
+     * @return {[type]} [description]
+     */
     negate: function ()
     {
         this.x = -this.x;
@@ -148,6 +311,16 @@ var Vector3 = new Class({
         return this;
     },
 
+    /**
+     * [description]
+     *
+     * @method Phaser.Math.Vector3#distance
+     * @since 3.0.0
+     *
+     * @param {[type]} v - [description]
+     *
+     * @return {[type]} [description]
+     */
     distance: function (v)
     {
         var dx = v.x - this.x;
@@ -157,6 +330,16 @@ var Vector3 = new Class({
         return Math.sqrt(dx * dx + dy * dy + dz * dz);
     },
 
+    /**
+     * [description]
+     *
+     * @method Phaser.Math.Vector3#distanceSq
+     * @since 3.0.0
+     *
+     * @param {[type]} v - [description]
+     *
+     * @return {[type]} [description]
+     */
     distanceSq: function (v)
     {
         var dx = v.x - this.x;
@@ -166,6 +349,14 @@ var Vector3 = new Class({
         return dx * dx + dy * dy + dz * dz;
     },
 
+    /**
+     * [description]
+     *
+     * @method Phaser.Math.Vector3#length
+     * @since 3.0.0
+     *
+     * @return {[type]} [description]
+     */
     length: function ()
     {
         var x = this.x;
@@ -175,6 +366,14 @@ var Vector3 = new Class({
         return Math.sqrt(x * x + y * y + z * z);
     },
 
+    /**
+     * [description]
+     *
+     * @method Phaser.Math.Vector3#lengthSq
+     * @since 3.0.0
+     *
+     * @return {[type]} [description]
+     */
     lengthSq: function ()
     {
         var x = this.x;
@@ -184,6 +383,14 @@ var Vector3 = new Class({
         return x * x + y * y + z * z;
     },
 
+    /**
+     * [description]
+     *
+     * @method Phaser.Math.Vector3#normalize
+     * @since 3.0.0
+     *
+     * @return {[type]} [description]
+     */
     normalize: function ()
     {
         var x = this.x;
@@ -203,11 +410,31 @@ var Vector3 = new Class({
         return this;
     },
 
+    /**
+     * [description]
+     *
+     * @method Phaser.Math.Vector3#dot
+     * @since 3.0.0
+     *
+     * @param {[type]} v - [description]
+     *
+     * @return {[type]} [description]
+     */
     dot: function (v)
     {
         return this.x * v.x + this.y * v.y + this.z * v.z;
     },
 
+    /**
+     * [description]
+     *
+     * @method Phaser.Math.Vector3#cross
+     * @since 3.0.0
+     *
+     * @param {[type]} v - [description]
+     *
+     * @return {[type]} [description]
+     */
     cross: function (v)
     {
         var ax = this.x;
@@ -224,6 +451,17 @@ var Vector3 = new Class({
         return this;
     },
 
+    /**
+     * [description]
+     *
+     * @method Phaser.Math.Vector3#lerp
+     * @since 3.0.0
+     *
+     * @param {[type]} v - [description]
+     * @param {[type]} t - [description]
+     *
+     * @return {[type]} [description]
+     */
     lerp: function (v, t)
     {
         if (t === undefined) { t = 0; }
@@ -239,6 +477,16 @@ var Vector3 = new Class({
         return this;
     },
 
+    /**
+     * [description]
+     *
+     * @method Phaser.Math.Vector3#transformMat3
+     * @since 3.0.0
+     *
+     * @param {[type]} mat - [description]
+     *
+     * @return {[type]} [description]
+     */
     transformMat3: function (mat)
     {
         var x = this.x;
@@ -253,6 +501,16 @@ var Vector3 = new Class({
         return this;
     },
 
+    /**
+     * [description]
+     *
+     * @method Phaser.Math.Vector3#transformMat4
+     * @since 3.0.0
+     *
+     * @param {[type]} mat - [description]
+     *
+     * @return {[type]} [description]
+     */
     transformMat4: function (mat)
     {
         var x = this.x;
@@ -267,6 +525,16 @@ var Vector3 = new Class({
         return this;
     },
 
+    /**
+     * [description]
+     *
+     * @method Phaser.Math.Vector3#transformCoordinates
+     * @since 3.0.0
+     *
+     * @param {[type]} mat - [description]
+     *
+     * @return {[type]} [description]
+     */
     transformCoordinates: function (mat)
     {
         var x = this.x;
@@ -286,6 +554,16 @@ var Vector3 = new Class({
         return this;
     },
 
+    /**
+     * [description]
+     *
+     * @method Phaser.Math.Vector3#transformQuat
+     * @since 3.0.0
+     *
+     * @param {[type]} q - [description]
+     *
+     * @return {[type]} [description]
+     */
     transformQuat: function (q)
     {
         // benchmarks: http://jsperf.com/quaternion-transform-vec3-implementations
@@ -319,6 +597,16 @@ var Vector3 = new Class({
      * @method project
      * @param {Matrix4} the 4x4 matrix to multiply with 
      * @return {Vector3} this object for chaining
+     */
+    /**
+     * [description]
+     *
+     * @method Phaser.Math.Vector3#project
+     * @since 3.0.0
+     *
+     * @param {[type]} mat - [description]
+     *
+     * @return {[type]} [description]
      */
     project: function (mat)
     {
@@ -367,6 +655,17 @@ var Vector3 = new Class({
      * @param  {Matrix4} invProjectionView combined projection and view matrix
      * @return {Vector3}                   this object, for chaining
      */
+    /**
+     * [description]
+     *
+     * @method Phaser.Math.Vector3#unproject
+     * @since 3.0.0
+     *
+     * @param {[type]} viewport - [description]
+     * @param {[type]} invProjectionView - [description]
+     *
+     * @return {[type]} [description]
+     */
     unproject: function (viewport, invProjectionView)
     {
         var viewX = viewport.x;
@@ -385,6 +684,14 @@ var Vector3 = new Class({
         return this.project(invProjectionView);
     },
 
+    /**
+     * [description]
+     *
+     * @method Phaser.Math.Vector3#reset
+     * @since 3.0.0
+     *
+     * @return {[type]} [description]
+     */
     reset: function ()
     {
         this.x = 0;

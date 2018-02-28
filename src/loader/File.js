@@ -1,24 +1,50 @@
+/**
+ * @author       Richard Davey <rich@photonstorm.com>
+ * @copyright    2018 Photon Storm Ltd.
+ * @license      {@link https://github.com/photonstorm/phaser/blob/master/license.txt|MIT License}
+ */
+
 var Class = require('../utils/Class');
-var GetFastValue = require('../utils/object/GetFastValue');
 var CONST = require('./const');
+var GetFastValue = require('../utils/object/GetFastValue');
 var GetURL = require('./GetURL');
 var MergeXHRSettings = require('./MergeXHRSettings');
 var XHRLoader = require('./XHRLoader');
 var XHRSettings = require('./XHRSettings');
 
-//  Phaser.Loader.File
-
+/**
+ * @classdesc
+ * [description]
+ *
+ * @class File
+ * @memberOf Phaser.Loader
+ * @constructor
+ * @since 3.0.0
+ *
+ * @param {object} fileConfig - [description]
+ */
 var File = new Class({
 
     initialize:
 
-    // old signature: type, key, url, responseType, xhrSettings, config
     function File (fileConfig)
     {
-        //  file type (image, json, etc) for sorting within the Loader
+        /**
+         * The file type string (image, json, etc) for sorting within the Loader.
+         * 
+         * @name Phaser.Loader.File#type
+         * @type {string}
+         * @since 3.0.0
+         */
         this.type = GetFastValue(fileConfig, 'type', false);
 
-        //  unique cache key (unique within its file type)
+        /**
+         * Unique cache key (unique within its file type)
+         *
+         * @name Phaser.Loader.File#key
+         * @type {string}
+         * @since 3.0.0
+         */
         this.key = GetFastValue(fileConfig, 'key', false);
 
         if (!this.type || !this.key)
@@ -26,21 +52,40 @@ var File = new Class({
             throw new Error('Error calling \'Loader.' + this.type + '\' invalid key provided.');
         }
 
-        //  The URL of the file, not including baseURL
+        /**
+         * The URL of the file, not including baseURL.
+         *
+         * @name Phaser.Loader.File#url
+         * @type {string}
+         * @since 3.0.0
+         */
         this.url = GetFastValue(fileConfig, 'url');
 
         if (this.url === undefined)
         {
             this.url = GetFastValue(fileConfig, 'path', '') + this.key + '.' + GetFastValue(fileConfig, 'extension', '');
         }
-        else
+        else if (typeof(this.url) !== 'function')
         {
             this.url = GetFastValue(fileConfig, 'path', '').concat(this.url);
         }
 
-        //  Set when the Loader calls 'load' on this file
+        /**
+         * Set when the Loader calls 'load' on this file.
+         *
+         * @name Phaser.Loader.File#src
+         * @type {string}
+         * @since 3.0.0
+         */
         this.src = '';
 
+        /**
+         * The merged XHRSettings for this file.
+         *
+         * @name Phaser.Loader.File#xhrSettings
+         * @type {Phaser.Loader.XHRSettings}
+         * @since 3.0.0
+         */
         this.xhrSettings = XHRSettings(GetFastValue(fileConfig, 'responseType', undefined));
 
         if (GetFastValue(fileConfig, 'xhrSettings', false))
@@ -48,33 +93,153 @@ var File = new Class({
             this.xhrSettings = MergeXHRSettings(this.xhrSettings, GetFastValue(fileConfig, 'xhrSettings', {}));
         }
 
-        //  The LoaderPlugin instance that is loading this file
+        /**
+         * The LoaderPlugin instance that is loading this file.
+         *
+         * @name Phaser.Loader.File#loader
+         * @type {?Phaser.Loader.LoaderPlugin}
+         * @since 3.0.0
+         */
         this.loader = null;
 
+        /**
+         * The XHR Loader instance that is loading this File.
+         *
+         * @name Phaser.Loader.File#xhrLoader
+         * @type {?Phaser.Loader.XHRLoader}
+         * @since 3.0.0
+         */
         this.xhrLoader = null;
 
-        this.state = CONST.FILE_PENDING;
+        /**
+         * The current state of the file. One of the FILE_CONST values.
+         *
+         * @name Phaser.Loader.File#state
+         * @type {integer}
+         * @since 3.0.0
+         */
+        this.state = typeof(this.url) === "function" ? CONST.FILE_POPULATED : CONST.FILE_PENDING;
 
-        //  Set by onProgress (only if loading via XHR)
+        /**
+         * The total size of this file.
+         * Set by onProgress and only if loading via XHR.
+         *
+         * @name Phaser.Loader.File#bytesTotal
+         * @type {number}
+         * @default 0
+         * @since 3.0.0
+         */
         this.bytesTotal = 0;
+
+        /**
+         * Updated as the file loads.
+         * Only set if loading via XHR.
+         *
+         * @name Phaser.Loader.File#bytesLoaded
+         * @type {number}
+         * @default -1
+         * @since 3.0.0
+         */
         this.bytesLoaded = -1;
+
+        /**
+         * A percentage value between 0 and 1 indicating how much of this file has loaded.
+         * Only set if loading via XHR.
+         *
+         * @name Phaser.Loader.File#percentComplete
+         * @type {float}
+         * @default -1
+         * @since 3.0.0
+         */
         this.percentComplete = -1;
 
-        //  For CORs based loading.
-        //  If this is undefined then the File will check BaseLoader.crossOrigin and use that (if set)
+        /**
+         * For CORs based loading.
+         * If this is undefined then the File will check BaseLoader.crossOrigin and use that (if set)
+         *
+         * @name Phaser.Loader.File#crossOrigin
+         * @type {string|undefined}
+         * @since 3.0.0
+         */
         this.crossOrigin = undefined;
 
-        //  The actual processed file data
+        /**
+         * The processed file data, stored in here after the file has loaded.
+         *
+         * @name Phaser.Loader.File#data
+         * @type {any}
+         * @since 3.0.0
+         */
         this.data = undefined;
 
-        //  A config object that can be used by file types to store transitional data
+        /**
+         * A config object that can be used by file types to store transitional data.
+         *
+         * @name Phaser.Loader.File#config
+         * @type {object}
+         * @since 3.0.0
+         */
         this.config = GetFastValue(fileConfig, 'config', {});
 
-        //  Multipart file? (i.e. an atlas and its json together)
+        /**
+         * If this is a multipart file, i.e. an atlas and its json together, then this is a reference
+         * to the linked file. Set and used internally by the Loader.
+         *
+         * @name Phaser.Loader.File#linkFile
+         * @type {?Phaser.Loader.File}
+         * @since 3.0.0
+         */
         this.linkFile = undefined;
+
+        /**
+         * If this is a multipart file, i.e. an atlas and its json together, then this is a reference
+         * to the type of linked association. Set and used internally by the Loader.
+         *
+         * @name Phaser.Loader.File#linkType
+         * @type {string}
+         * @default ''
+         * @since 3.0.0
+         */
         this.linkType = '';
+
+        /**
+         * If this is a link file, is this the parent or the sibbling?
+         *
+         * @name Phaser.Loader.File#linkParent
+         * @type {boolean}
+         * @default false
+         * @since 3.0.0
+         */
+        this.linkParent = false;
     },
 
+    /**
+     * If this is a multipart file, i.e. an atlas and its json together, then this is a reference
+     * to the linked file. Set and used internally by the Loader.
+     *
+     * @method Phaser.Loader.File#setLinkFile
+     * @since 3.0.0
+     * 
+     * @param {Phaser.Loader.File} fileB - The linked file.
+     * @param {string} linkType - The type of association.
+     */
+    setLinkFile: function (fileB, linkType)
+    {
+        this.linkFile = fileB;
+        fileB.linkFile = this;
+
+        this.linkType = linkType;
+        fileB.linkType = linkType;
+
+        this.linkParent = true;
+    },
+
+    /**
+     * Resets the XHRLoader instance.
+     *
+     * @method Phaser.Loader.File#resetXHR
+     * @since 3.0.0
+     */
     resetXHR: function ()
     {
         this.xhrLoader.onload = undefined;
@@ -82,8 +247,15 @@ var File = new Class({
         this.xhrLoader.onprogress = undefined;
     },
 
-    //  Called by the Loader, starts the actual file downloading.
-    //  During the load the methods onLoad, onProgress, etc are called based on the XHR events.
+    /**
+     * Called by the Loader, starts the actual file downloading.
+     * During the load the methods onLoad, onProgress, etc are called based on the XHR events.
+     *
+     * @method Phaser.Loader.File#load
+     * @since 3.0.0
+     *
+     * @param {Phaser.Loader.LoaderPlugin} loader - The Loader that will load this File.
+     */
     load: function (loader)
     {
         this.loader = loader;
@@ -100,7 +272,7 @@ var File = new Class({
 
             if (this.src.indexOf('data:') === 0)
             {
-                console.log('Local data URI');
+                console.warn('Local data URIs are not supported: ' + this.key);
             }
             else
             {
@@ -109,7 +281,14 @@ var File = new Class({
         }
     },
 
-    //  Called when the file loads, is sent a DOM ProgressEvent
+    /**
+     * Called when the file finishes loading, is sent a DOM ProgressEvent.
+     *
+     * @method Phaser.Loader.File#onLoad
+     * @since 3.0.0
+     *
+     * @param {ProgressEvent} event - The DOM ProgressEvent that resulted from this load.
+     */
     onLoad: function (event)
     {
         this.resetXHR();
@@ -124,14 +303,29 @@ var File = new Class({
         }
     },
 
-    //  Called when the file errors, is sent a DOM ProgressEvent
-    onError: function (event)
+    /**
+     * Called if the file errors while loading, is sent a DOM ProgressEvent.
+     *
+     * @method Phaser.Loader.File#onError
+     * @since 3.0.0
+     *
+     * @param {ProgressEvent} event - The DOM ProgressEvent that resulted from this error.
+     */
+    onError: function ()
     {
         this.resetXHR();
 
         this.loader.nextFile(this, false);
     },
 
+    /**
+     * Called during the file load progress. Is sent a DOM ProgressEvent.
+     *
+     * @method Phaser.Loader.File#onProgress
+     * @since 3.0.0
+     *
+     * @param {ProgressEvent} event - The DOM ProgressEvent.
+     */
     onProgress: function (event)
     {
         if (event.lengthComputable)
@@ -146,8 +340,15 @@ var File = new Class({
         }
     },
 
-    //  Usually overriden by the FileTypes and is called by Loader.finishedLoading.
-    //  The callback is Loader.processUpdate
+    /**
+     * Usually overridden by the FileTypes and is called by Loader.finishedLoading.
+     * The callback is Loader.processUpdate
+     *
+     * @method Phaser.Loader.File#onProcess
+     * @since 3.0.0
+     *
+     * @param {function} callback - The callback to invoke to process this File.
+     */
     onProcess: function (callback)
     {
         this.state = CONST.FILE_PROCESSING;
@@ -157,6 +358,13 @@ var File = new Class({
         callback(this);
     },
 
+    /**
+     * Called with the File has completed loading.
+     * Checks on the state of its linkfile, if set.
+     *
+     * @method Phaser.Loader.File#onComplete
+     * @since 3.0.0
+     */
     onComplete: function ()
     {
         if (this.linkFile)
@@ -185,11 +393,11 @@ var File = new Class({
  * Static method for creating object URL using URL API and setting it as image 'src' attribute.
  * If URL API is not supported (usually on old browsers) it falls back to creating Base64 encoded url using FileReader.
  *
- * @method createObjectURL
+ * @method Phaser.Loader.File.createObjectURL
  * @static
- * @param image {Image} Image object which 'src' attribute should be set to object URL.
- * @param blob {Blob} A Blob object to create an object URL for.
- * @param defaultType {string} Default mime type used if blob type is not available.
+ * @param {Image} image - Image object which 'src' attribute should be set to object URL.
+ * @param {Blob} blob - A Blob object to create an object URL for.
+ * @param {string} defaultType - Default mime type used if blob type is not available.
  */
 File.createObjectURL = function (image, blob, defaultType)
 {
@@ -217,9 +425,9 @@ File.createObjectURL = function (image, blob, defaultType)
  * Static method for releasing an existing object URL which was previously created
  * by calling {@link File#createObjectURL} method.
  *
- * @method revokeObjectURL
+ * @method Phaser.Loader.File.revokeObjectURL
  * @static
- * @param image {Image} Image object which 'src' attribute should be revoked.
+ * @param {Image} image - Image object which 'src' attribute should be revoked.
  */
 File.revokeObjectURL = function (image)
 {

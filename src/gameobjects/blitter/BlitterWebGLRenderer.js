@@ -1,82 +1,33 @@
+/**
+ * @author       Richard Davey <rich@photonstorm.com>
+ * @copyright    2018 Photon Storm Ltd.
+ * @license      {@link https://github.com/photonstorm/phaser/blob/master/license.txt|MIT License}
+ */
+
 var GameObject = require('../GameObject');
 
-var BlitterWebGLRenderer = function (renderer, src, interpolationPercentage, camera)
+/**
+ * Renders this Game Object with the WebGL Renderer to the given Camera.
+ * The object will not render if any of its renderFlags are set or it is being actively filtered out by the Camera.
+ * This method should not be called directly. It is a utility function of the Render module.
+ *
+ * @method Phaser.GameObjects.Blitter#renderWebGL
+ * @since 3.0.0
+ * @private
+ *
+ * @param {Phaser.Renderer.WebGLRenderer} renderer - A reference to the current active WebGL renderer.
+ * @param {Phaser.GameObjects.Blitter} gameObject - The Game Object being rendered in this call.
+ * @param {number} interpolationPercentage - Reserved for future use and custom pipelines.
+ * @param {Phaser.Cameras.Scene2D.Camera} camera - The Camera that is rendering the Game Object.
+ */
+var BlitterWebGLRenderer = function (renderer, gameObject, interpolationPercentage, camera)
 {
-    if (GameObject.RENDER_MASK !== src.renderFlags || (src.cameraFilter > 0 && (src.cameraFilter & camera._id)))
+    if (GameObject.RENDER_MASK !== gameObject.renderFlags || (gameObject.cameraFilter > 0 && (gameObject.cameraFilter & camera._id)))
     {
         return;
     }
 
-    var list = src.getRenderList();
-    var blitterBatch = renderer.blitterBatch;
-    var cameraMatrix = camera.matrix.matrix;
-    var a = cameraMatrix[0];
-    var b = cameraMatrix[1];
-    var c = cameraMatrix[2];
-    var d = cameraMatrix[3];
-    var e = cameraMatrix[4];
-    var f = cameraMatrix[5];
-    var cameraScrollX = camera.scrollX * src.scrollFactorX;
-    var cameraScrollY = camera.scrollY * src.scrollFactorY;
-    var renderTarget = src.renderTarget;
-
-    //  Render bobs
-
-    for (var i = 0, l = list.length; i < l; i++)
-    {
-        var bob = list[i];
-        var frame = bob.frame;
-        var alpha = bob.alpha;
-        var vertexDataBuffer = blitterBatch.vertexDataBuffer;
-        var vertexBuffer = vertexDataBuffer.floatView;
-        var vertexOffset = 0;
-        var uvs = frame.uvs;
-        var width = frame.width * (bob.flipX ? -1 : 1);
-        var height = frame.height * (bob.flipY ? -1 : 1);
-        var x = bob.x + frame.x - cameraScrollX + ((frame.width) * (bob.flipX ? 1 : 0.0));
-        var y = bob.y + frame.y - cameraScrollY + ((frame.height) * (bob.flipY ? 1 : 0.0));
-        var xw = x + width;
-        var yh = y + height;
-        var tx = x * a + y * c + e;
-        var ty = x * b + y * d + f;
-        var txw = xw * a + yh * c + e;
-        var tyh = xw * b + yh * d + f;
-
-        if (blitterBatch.elementCount >= blitterBatch.maxParticles)
-        {
-            blitterBatch.flush();
-        }
-
-        renderer.setRenderer(blitterBatch, frame.texture.source[frame.sourceIndex].glTexture, camera, renderTarget);
-        vertexOffset = vertexDataBuffer.allocate(20);
-        blitterBatch.elementCount += 6;
-        x += frame.x;
-        y += frame.y;
-
-        vertexBuffer[vertexOffset++] = tx;
-        vertexBuffer[vertexOffset++] = ty;
-        vertexBuffer[vertexOffset++] = uvs.x0;
-        vertexBuffer[vertexOffset++] = uvs.y0;
-        vertexBuffer[vertexOffset++] = alpha;
-
-        vertexBuffer[vertexOffset++] = tx;
-        vertexBuffer[vertexOffset++] = tyh;
-        vertexBuffer[vertexOffset++] = uvs.x1;
-        vertexBuffer[vertexOffset++] = uvs.y1;
-        vertexBuffer[vertexOffset++] = alpha;
-
-        vertexBuffer[vertexOffset++] = txw;
-        vertexBuffer[vertexOffset++] = tyh;
-        vertexBuffer[vertexOffset++] = uvs.x2;
-        vertexBuffer[vertexOffset++] = uvs.y2;
-        vertexBuffer[vertexOffset++] = alpha;
-
-        vertexBuffer[vertexOffset++] = txw;
-        vertexBuffer[vertexOffset++] = ty;
-        vertexBuffer[vertexOffset++] = uvs.x3;
-        vertexBuffer[vertexOffset++] = uvs.y3;
-        vertexBuffer[vertexOffset++] = alpha;
-    }
+    this.pipeline.drawBlitter(gameObject, camera);
 };
 
 module.exports = BlitterWebGLRenderer;

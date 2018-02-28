@@ -1,7 +1,25 @@
+/**
+ * @author       Richard Davey <rich@photonstorm.com>
+ * @copyright    2018 Photon Storm Ltd.
+ * @license      {@link https://github.com/photonstorm/phaser/blob/master/license.txt|MIT License}
+ */
+
+/**
+ * [description]
+ *
+ * @function Phaser.Renderer.Snapshot.WebGL
+ * @since 3.0.0
+ *
+ * @param {HTMLCanvasElement} sourceCanvas - [description]
+ * @param {string} [type='image/png'] - [description]
+ * @param {float} [encoderOptions=0.92] - [description]
+ *
+ * @return {Image} [description]
+ */
 var WebGLSnapshot = function (sourceCanvas, type, encoderOptions)
 {
-    if (type === undefined) { type = 'image/png'; }
-    if (encoderOptions === undefined) { encoderOptions = 0.92; }
+    if (!type) { type = 'image/png'; }
+    if (!encoderOptions) { encoderOptions = 0.92; }
 
     var gl = sourceCanvas.getContext('experimental-webgl');
     var pixels = new Uint8Array(gl.drawingBufferWidth * gl.drawingBufferHeight * 4);

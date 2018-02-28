@@ -1,14 +1,70 @@
+/**
+ * @author       Richard Davey <rich@photonstorm.com>
+ * @copyright    2018 Photon Storm Ltd.
+ * @license      {@link https://github.com/photonstorm/phaser/blob/master/license.txt|MIT License}
+ */
+
 //  Adapted from [gl-matrix](https://github.com/toji/gl-matrix) by toji 
 //  and [vecmath](https://github.com/mattdesl/vecmath) by mattdesl
 
 var Class = require('../utils/Class');
 
+/**
+ * @classdesc
+ * [description]
+ *
+ * @class Vector4
+ * @memberOf Phaser.Math
+ * @constructor
+ * @since 3.0.0
+ *
+ * @param {number} [x] - [description]
+ * @param {number} [y] - [description]
+ * @param {number} [z] - [description]
+ * @param {number} [w] - [description]
+ */
 var Vector4 = new Class({
 
     initialize:
 
     function Vector4 (x, y, z, w)
     {
+        /**
+         * The x component of this Vector.
+         *
+         * @name Phaser.Math.Vector4#x
+         * @type {number}
+         * @default 0
+         * @since 3.0.0
+         */
+
+        /**
+         * The y component of this Vector.
+         *
+         * @name Phaser.Math.Vector4#y
+         * @type {number}
+         * @default 0
+         * @since 3.0.0
+         */
+
+        /**
+         * The z component of this Vector.
+         *
+         * @name Phaser.Math.Vector4#z
+         * @type {number}
+         * @default 0
+         * @since 3.0.0
+         */
+
+        /**
+         * The w component of this Vector.
+         *
+         * @name Phaser.Math.Vector4#w
+         * @type {number}
+         * @default 0
+         * @since 3.0.0
+         */
+
         if (typeof x === 'object')
         {
             this.x = x.x || 0;
@@ -25,11 +81,29 @@ var Vector4 = new Class({
         }
     },
 
+    /**
+     * [description]
+     *
+     * @method Phaser.Math.Vector4#clone
+     * @since 3.0.0
+     *
+     * @return {Phaser.Math.Vector4} [description]
+     */
     clone: function ()
     {
         return new Vector4(this.x, this.y, this.z, this.w);
     },
 
+    /**
+     * [description]
+     *
+     * @method Phaser.Math.Vector4#copy
+     * @since 3.0.0
+     *
+     * @param {Phaser.Math.Vector4} src - [description]
+     *
+     * @return {Phaser.Math.Vector4} This Vector4 object.
+     */
     copy: function (src)
     {
         this.x = src.x;
@@ -40,11 +114,34 @@ var Vector4 = new Class({
         return this;
     },
 
+    /**
+     * [description]
+     *
+     * @method Phaser.Math.Vector4#equals
+     * @since 3.0.0
+     *
+     * @param {Phaser.Math.Vector4} v - [description]
+     *
+     * @return {boolean} [description]
+     */
     equals: function (v)
     {
         return ((this.x === v.x) && (this.y === v.y) && (this.z === v.z) && (this.w === v.w));
     },
 
+    /**
+     * [description]
+     *
+     * @method Phaser.Math.Vector4#set
+     * @since 3.0.0
+     *
+     * @param {number} x - [description]
+     * @param {number} y - [description]
+     * @param {number} z - [description]
+     * @param {number} w - [description]
+     *
+     * @return {Phaser.Math.Vector4} This Vector4 object.
+     */
     set: function (x, y, z, w)
     {
         if (typeof x === 'object')
@@ -65,6 +162,16 @@ var Vector4 = new Class({
         return this;
     },
 
+    /**
+     * [description]
+     *
+     * @method Phaser.Math.Vector4#add
+     * @since 3.0.0
+     *
+     * @param {Phaser.Math.Vector2|Phaser.Math.Vector3|Phaser.Math.Vector4} v - [description]
+     *
+     * @return {Phaser.Math.Vector4} This Vector4 object.
+     */
     add: function (v)
     {
         this.x += v.x;
@@ -75,6 +182,16 @@ var Vector4 = new Class({
         return this;
     },
 
+    /**
+     * [description]
+     *
+     * @method Phaser.Math.Vector4#subtract
+     * @since 3.0.0
+     *
+     * @param {Phaser.Math.Vector2|Phaser.Math.Vector3|Phaser.Math.Vector4} v - [description]
+     *
+     * @return {Phaser.Math.Vector4} This Vector4 object.
+     */
     subtract: function (v)
     {
         this.x -= v.x;
@@ -85,6 +202,16 @@ var Vector4 = new Class({
         return this;
     },
 
+    /**
+     * [description]
+     *
+     * @method Phaser.Math.Vector4#scale
+     * @since 3.0.0
+     *
+     * @param {number} scale - [description]
+     *
+     * @return {Phaser.Math.Vector4} This Vector4 object.
+     */
     scale: function (scale)
     {
         this.x *= scale;
@@ -95,6 +222,14 @@ var Vector4 = new Class({
         return this;
     },
 
+    /**
+     * [description]
+     *
+     * @method Phaser.Math.Vector4#length
+     * @since 3.0.0
+     *
+     * @return {number} [description]
+     */
     length: function ()
     {
         var x = this.x;
@@ -105,6 +240,14 @@ var Vector4 = new Class({
         return Math.sqrt(x * x + y * y + z * z + w * w);
     },
 
+    /**
+     * [description]
+     *
+     * @method Phaser.Math.Vector4#lengthSq
+     * @since 3.0.0
+     *
+     * @return {number} [description]
+     */
     lengthSq: function ()
     {
         var x = this.x;
@@ -115,6 +258,14 @@ var Vector4 = new Class({
         return x * x + y * y + z * z + w * w;
     },
 
+    /**
+     * [description]
+     *
+     * @method Phaser.Math.Vector4#normalize
+     * @since 3.0.0
+     *
+     * @return {Phaser.Math.Vector4} This Vector4 object.
+     */
     normalize: function ()
     {
         var x = this.x;
@@ -136,11 +287,32 @@ var Vector4 = new Class({
         return this;
     },
 
+    /**
+     * [description]
+     *
+     * @method Phaser.Math.Vector4#dot
+     * @since 3.0.0
+     *
+     * @param {[type]} v - [description]
+     *
+     * @return {number} [description]
+     */
     dot: function (v)
     {
         return this.x * v.x + this.y * v.y + this.z * v.z + this.w * v.w;
     },
 
+    /**
+     * [description]
+     *
+     * @method Phaser.Math.Vector4#lerp
+     * @since 3.0.0
+     *
+     * @param {[type]} v - [description]
+     * @param {[type]} t - [description]
+     *
+     * @return {Phaser.Math.Vector4} This Vector4 object.
+     */
     lerp: function (v, t)
     {
         if (t === undefined) { t = 0; }
@@ -158,6 +330,16 @@ var Vector4 = new Class({
         return this;
     },
 
+    /**
+     * [description]
+     *
+     * @method Phaser.Math.Vector4#multiply
+     * @since 3.0.0
+     *
+     * @param {[type]} v - [description]
+     *
+     * @return {Phaser.Math.Vector4} This Vector4 object.
+     */
     multiply: function (v)
     {
         this.x *= v.x;
@@ -168,6 +350,16 @@ var Vector4 = new Class({
         return this;
     },
 
+    /**
+     * [description]
+     *
+     * @method Phaser.Math.Vector4#divide
+     * @since 3.0.0
+     *
+     * @param {[type]} v - [description]
+     *
+     * @return {Phaser.Math.Vector4} This Vector4 object.
+     */
     divide: function (v)
     {
         this.x /= v.x;
@@ -178,6 +370,16 @@ var Vector4 = new Class({
         return this;
     },
 
+    /**
+     * [description]
+     *
+     * @method Phaser.Math.Vector4#distance
+     * @since 3.0.0
+     *
+     * @param {[type]} v - [description]
+     *
+     * @return {number} [description]
+     */
     distance: function (v)
     {
         var dx = v.x - this.x;
@@ -188,6 +390,16 @@ var Vector4 = new Class({
         return Math.sqrt(dx * dx + dy * dy + dz * dz + dw * dw);
     },
 
+    /**
+     * [description]
+     *
+     * @method Phaser.Math.Vector4#distanceSq
+     * @since 3.0.0
+     *
+     * @param {[type]} v - [description]
+     *
+     * @return {number} [description]
+     */
     distanceSq: function (v)
     {
         var dx = v.x - this.x;
@@ -198,6 +410,14 @@ var Vector4 = new Class({
         return dx * dx + dy * dy + dz * dz + dw * dw;
     },
 
+    /**
+     * [description]
+     *
+     * @method Phaser.Math.Vector4#negate
+     * @since 3.0.0
+     *
+     * @return {Phaser.Math.Vector4} This Vector4 object.
+     */
     negate: function ()
     {
         this.x = -this.x;
@@ -208,6 +428,16 @@ var Vector4 = new Class({
         return this;
     },
 
+    /**
+     * [description]
+     *
+     * @method Phaser.Math.Vector4#transformMat4
+     * @since 3.0.0
+     *
+     * @param {[type]} mat - [description]
+     *
+     * @return {Phaser.Math.Vector4} This Vector4 object.
+     */
     transformMat4: function (mat)
     {
         var x = this.x;
@@ -226,6 +456,16 @@ var Vector4 = new Class({
 
     //  TODO: is this really the same as Vector3?
     //  Also, what about this: http://molecularmusings.wordpress.com/2013/05/24/a-faster-quaternion-vector-multiplication/
+    /**
+     * [description]
+     *
+     * @method Phaser.Math.Vector4#transformQuat
+     * @since 3.0.0
+     *
+     * @param {[type]} q - [description]
+     *
+     * @return {Phaser.Math.Vector4} This Vector4 object.
+     */
     transformQuat: function (q)
     {
         // benchmarks: http://jsperf.com/quaternion-transform-vec3-implementations
@@ -251,6 +491,14 @@ var Vector4 = new Class({
         return this;
     },
 
+    /**
+     * [description]
+     *
+     * @method Phaser.Math.Vector4#reset
+     * @since 3.0.0
+     *
+     * @return {Phaser.Math.Vector4} This Vector4 object.
+     */
     reset: function ()
     {
         this.x = 0;
@@ -263,6 +511,7 @@ var Vector4 = new Class({
 
 });
 
+//  TODO: Check if these are required internally, if not, remove.
 Vector4.prototype.sub = Vector4.prototype.subtract;
 Vector4.prototype.mul = Vector4.prototype.multiply;
 Vector4.prototype.div = Vector4.prototype.divide;

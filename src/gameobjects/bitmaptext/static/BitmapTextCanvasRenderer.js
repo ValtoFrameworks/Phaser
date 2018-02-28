@@ -1,5 +1,25 @@
+/**
+ * @author       Richard Davey <rich@photonstorm.com>
+ * @copyright    2018 Photon Storm Ltd.
+ * @license      {@link https://github.com/photonstorm/phaser/blob/master/license.txt|MIT License}
+ */
+
 var GameObject = require('../../GameObject');
 
+/**
+ * Renders this Game Object with the Canvas Renderer to the given Camera.
+ * The object will not render if any of its renderFlags are set or it is being actively filtered out by the Camera.
+ * This method should not be called directly. It is a utility function of the Render module.
+ *
+ * @method Phaser.GameObjects.BitmapText#renderCanvas
+ * @since 3.0.0
+ * @private
+ *
+ * @param {Phaser.Renderer.CanvasRenderer} renderer - A reference to the current active Canvas renderer.
+ * @param {Phaser.GameObjects.BitmapText} src - The Game Object being rendered in this call.
+ * @param {number} interpolationPercentage - Reserved for future use and custom pipelines.
+ * @param {Phaser.Cameras.Scene2D.Camera} camera - The Camera that is rendering the Game Object.
+ */
 var BitmapTextCanvasRenderer = function (renderer, src, interpolationPercentage, camera)
 {
     var text = src.text;
@@ -42,7 +62,6 @@ var BitmapTextCanvasRenderer = function (renderer, src, interpolationPercentage,
     var textureX = textureFrame.cutX;
     var textureY = textureFrame.cutY;
 
-    var rotation = 0;
     var scale = (src.fontSize / src.fontData.size);
 
     //  Blend Mode
@@ -68,6 +87,7 @@ var BitmapTextCanvasRenderer = function (renderer, src, interpolationPercentage,
     ctx.save();
     ctx.translate((src.x - cameraScrollX) + src.frame.x, (src.y - cameraScrollY) + src.frame.y);
     ctx.rotate(src.rotation);
+    ctx.translate(-src.displayOriginX, -src.displayOriginY);
     ctx.scale(src.scaleX, src.scaleY);
 
     // ctx.fillStyle = 'rgba(255,0,255,0.5)';
@@ -124,6 +144,7 @@ var BitmapTextCanvasRenderer = function (renderer, src, interpolationPercentage,
         ctx.save();
         ctx.translate(x, y);
         ctx.scale(scale, scale);
+
         // ctx.fillRect(0, 0, glyphW, glyphH);
         ctx.drawImage(image, glyphX, glyphY, glyphW, glyphH, 0, 0, glyphW, glyphH);
         ctx.restore();

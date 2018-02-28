@@ -1,3 +1,9 @@
+/**
+ * @author       Richard Davey <rich@photonstorm.com>
+ * @copyright    2018 Photon Storm Ltd.
+ * @license      {@link https://github.com/photonstorm/phaser/blob/master/license.txt|MIT License}
+ */
+
 var LineToCircle = require('./LineToCircle');
 var Contains = require('../triangle/Contains');
 
@@ -14,7 +20,7 @@ var Contains = require('../triangle/Contains');
  */
 var TriangleToCircle = function (triangle, circle)
 {
-     //  First the cheapest ones:
+    //  First the cheapest ones:
 
     if (
         triangle.left > circle.right ||

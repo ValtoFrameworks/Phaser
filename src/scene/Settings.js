@@ -1,8 +1,23 @@
+/**
+ * @author       Richard Davey <rich@photonstorm.com>
+ * @copyright    2018 Photon Storm Ltd.
+ * @license      {@link https://github.com/photonstorm/phaser/blob/master/license.txt|MIT License}
+ */
+
 var CONST = require('./const');
-var ScaleModes = require('../renderer/ScaleModes');
 var GetValue = require('../utils/object/GetValue');
 var InjectionMap = require('./InjectionMap');
 
+/**
+ * Takes a Scene configuration object and returns a fully formed Systems object.
+ *
+ * @function Phaser.Scenes.Settings.create
+ * @since 3.0.0
+ *
+ * @param {object} config - [description]
+ *
+ * @return {object} [description]
+ */
 var Settings = {
 
     create: function (config)
@@ -20,8 +35,6 @@ var Settings = {
         return {
 
             status: CONST.PENDING,
-
-            op: CONST.BOOT,
 
             key: GetValue(config, 'key', ''),
             active: GetValue(config, 'active', false),
@@ -53,19 +66,7 @@ var Settings = {
 
             //  Plugins
 
-            plugins: GetValue(config, 'plugins', false),
-
-            //  Scene Render Settings (applies only to this Scene)
-
-            scaleMode: GetValue(config, 'scaleMode', ScaleModes.DEFAULT),
-            roundPixels: GetValue(config, 'roundPixels', false),
-
-            dirtyRender: GetValue(config, 'dirtyRender', false),
-            renderToTexture: GetValue(config, 'renderToTexture', false),
-
-            //  The following only apply if renderToTexture is true
-
-            autoResize: GetValue(config, 'autoResize', false)
+            plugins: GetValue(config, 'plugins', false)
 
         };
     }

@@ -1,11 +1,22 @@
 let fs = require('fs-extra');
 let sloc = require('node-sloc');
 
-let source = './dist/phaser.js';
+let source = './build/phaser.js';
+let sourceMap = './build/phaser.js.map';
 let dest = '../phaser3-examples/public/build/dev.js';
+let destMap = '../phaser3-examples/public/build/phaser.js.map';
 
 if (fs.existsSync(dest))
 {
+    fs.copy(sourceMap, destMap, function (err) {
+
+        if (err)
+        {
+            return console.error(err);
+        }
+
+    });
+
     fs.copy(source, dest, function (err) {
 
         if (err)

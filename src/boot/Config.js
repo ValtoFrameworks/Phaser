@@ -1,9 +1,15 @@
+/**
+ * @author       Richard Davey <rich@photonstorm.com>
+ * @copyright    2018 Photon Storm Ltd.
+ * @license      {@link https://github.com/photonstorm/phaser/blob/master/license.txt|MIT License}
+ */
+
 var Class = require('../utils/Class');
 var CONST = require('../const');
-var DefaultScenePlugins = require('../DefaultScenePlugins');
 var GetValue = require('../utils/object/GetValue');
 var MATH = require('../math/const');
 var NOOP = require('../utils/NOOP');
+var Plugins = require('../plugins');
 var ValueToColor = require('../display/color/ValueToColor');
 
 /**
@@ -23,9 +29,22 @@ var ValueToColor = require('../display/color/ValueToColor');
  */
 
 /**
- * @typedef {object} GameConfig
+ * @typedef {object} LoaderConfig
  *
- * @todo Add Physics Config
+ * @property {string} [baseURL] - [description]
+ * @property {string} [path] - [description]
+ * @property {boolean} [enableParallel=true] - [description]
+ * @property {integer} [maxParallelDownloads=4] - [description]
+ * @property {string|undefined} [crossOrigin=undefined] - [description]
+ * @property {string} [responseType] - [description]
+ * @property {boolean} [async=true] - [description]
+ * @property {string} [user] - [description]
+ * @property {string} [password] - [description]
+ * @property {integer} [timeout=0] - [description]
+ */
+
+/**
+ * @typedef {object} GameConfig
  *
  * @property {integer|string} [width=1024] - [description]
  * @property {integer|string} [height=768] - [description]
@@ -56,34 +75,36 @@ var ValueToColor = require('../display/color/ValueToColor');
  * @property {array} [banner.background] - [description]
  * @property {FPSConfig} [?fps] - [description]
  * @property {boolean} [pixelArt=false] - [description]
+ * @property {boolean} [autoResize=false] - [description]
+ * @property {boolean} [roundPixels=false] - [description]
  * @property {boolean} [transparent=false] - [description]
  * @property {boolean} [clearBeforeRender=true] - [description]
  * @property {string|number} [backgroundColor=0x000000] - [description]
- * @property {boolean} [preserveDrawingBuffer=false] - [description]
  * @property {object} [?callbacks] - [description]
  * @property {function} [callbacks.preBoot=NOOP] - [description]
  * @property {function} [callbacks.postBoot=NOOP] - [description]
- * @property {boolean} [useTicker=false] - [description]
+ * @property {LoaderConfig} [?loader] - [description]
  * @property {object} [?images] - [description]
  * @property {string} [images.default] - [description]
  * @property {string} [images.missing] - [description]
  */
 
+/**
+ * @classdesc
+ * [description]
+ *
+ * @class Config
+ * @memberOf Phaser.Boot
+ * @constructor
+ * @since 3.0.0
+ *
+ * @param {object} [GameConfig] - The configuration object for your Phaser Game instance.
+ *
+ */
 var Config = new Class({
 
     initialize:
 
-    /**
-     * [description]
-     *
-     * @class Config
-     * @memberOf Phaser.Boot
-     * @constructor
-     * @since 3.0.0
-     *
-     * @param {object} [GameConfig] - The configuration object for your Phaser Game instance.
-     *
-     */
     function Config (config)
     {
         if (config === undefined) { config = {}; }
@@ -117,7 +138,7 @@ var Config = new Class({
         MATH.RND.init(this.seed);
 
         this.gameTitle = GetValue(config, 'title', '');
-        this.gameURL = GetValue(config, 'url', 'http://phaser.io');
+        this.gameURL = GetValue(config, 'url', 'https://phaser.io');
         this.gameVersion = GetValue(config, 'version', '');
 
         //  Input
@@ -161,16 +182,23 @@ var Config = new Class({
         this.fps = GetValue(config, 'fps', null);
 
         this.pixelArt = GetValue(config, 'pixelArt', false);
+        this.autoResize = GetValue(config, 'autoResize', false);
+        this.roundPixels = GetValue(config, 'roundPixels', false);
         this.transparent = GetValue(config, 'transparent', false);
         this.clearBeforeRender = GetValue(config, 'clearBeforeRender', true);
-        this.backgroundColor = ValueToColor(GetValue(config, 'backgroundColor', 0));
-        this.preserveDrawingBuffer = GetValue(config, 'preserveDrawingBuffer', false);
+
+        var bgc = GetValue(config, 'backgroundColor', 0);
+
+        this.backgroundColor = ValueToColor(bgc);
+
+        if (bgc === 0 && this.transparent)
+        {
+            this.backgroundColor.alpha = 0;
+        }
 
         //  Callbacks
         this.preBoot = GetValue(config, 'callbacks.preBoot', NOOP);
         this.postBoot = GetValue(config, 'callbacks.postBoot', NOOP);
-
-        this.useTicker = GetValue(config, 'useTicker', false);
 
         //  Physics
         //  physics: {
@@ -195,7 +223,7 @@ var Config = new Class({
         this.loaderTimeout = GetValue(config, 'loader.timeout', 0);
 
         //  Scene Plugins
-        this.defaultPlugins = GetValue(config, 'plugins', DefaultScenePlugins);
+        this.defaultPlugins = GetValue(config, 'plugins', Plugins.DefaultScene);
 
         //  Default / Missing Images
         var pngPrefix = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAg';

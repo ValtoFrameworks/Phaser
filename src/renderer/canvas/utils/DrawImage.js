@@ -1,4 +1,18 @@
+/**
+ * @author       Richard Davey <rich@photonstorm.com>
+ * @copyright    2018 Photon Storm Ltd.
+ * @license      {@link https://github.com/photonstorm/phaser/blob/master/license.txt|MIT License}
+ */
 
+/**
+ * [description]
+ *
+ * @function Phaser.Renderer.Canvas.DrawImage
+ * @since 3.0.0
+ *
+ * @param {Phaser.GameObjects.GameObject} src - [description]
+ * @param {Phaser.Cameras.Scene2D.Camera} camera - [description]
+ */
 var DrawImage = function (src, camera)
 {
     var ctx = this.currentContext;
@@ -26,6 +40,7 @@ var DrawImage = function (src, camera)
     if (this.currentScaleMode !== src.scaleMode)
     {
         this.currentScaleMode = src.scaleMode;
+
         // ctx[this.smoothProperty] = (source.scaleMode === ScaleModes.LINEAR);
     }
 

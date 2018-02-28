@@ -1,7 +1,25 @@
+/**
+ * @author       Richard Davey <rich@photonstorm.com>
+ * @copyright    2018 Photon Storm Ltd.
+ * @license      {@link https://github.com/photonstorm/phaser/blob/master/license.txt|MIT License}
+ */
+
 //  Adapted from [gl-matrix](https://github.com/toji/gl-matrix) by toji 
 //  and [vecmath](https://github.com/mattdesl/vecmath) by mattdesl
 
 var Class = require('../utils/Class');
+
+/**
+ * @classdesc
+ * [description]
+ *
+ * @class Matrix3
+ * @memberOf Phaser.Math
+ * @constructor
+ * @since 3.0.0
+ *
+ * @param {Phaser.Math.Matrix3} [m] - [description]
+ */
 
 var Matrix3 = new Class({
 
@@ -9,6 +27,13 @@ var Matrix3 = new Class({
 
     function Matrix3 (m)
     {
+        /**
+         * [description]
+         *
+         * @name Phaser.Math.Matrix3#val
+         * @type {Float32Array}
+         * @since 3.0.0
+         */
         this.val = new Float32Array(9);
 
         if (m)
@@ -23,16 +48,44 @@ var Matrix3 = new Class({
         }
     },
 
+    /**
+     * [description]
+     *
+     * @method Phaser.Math.Matrix3#clone
+     * @since 3.0.0
+     *
+     * @return {[type]} [description]
+     */
     clone: function ()
     {
         return new Matrix3(this);
     },
 
+    /**
+     * [description]
+     *
+     * @method Phaser.Math.Matrix3#set
+     * @since 3.0.0
+     *
+     * @param {[type]} src - [description]
+     *
+     * @return {[type]} [description]
+     */
     set: function (src)
     {
         return this.copy(src);
     },
 
+    /**
+     * [description]
+     *
+     * @method Phaser.Math.Matrix3#copy
+     * @since 3.0.0
+     *
+     * @param {[type]} src - [description]
+     *
+     * @return {[type]} [description]
+     */
     copy: function (src)
     {
         var out = this.val;
@@ -51,6 +104,16 @@ var Matrix3 = new Class({
         return this;
     },
 
+    /**
+     * [description]
+     *
+     * @method Phaser.Math.Matrix3#fromMat4
+     * @since 3.0.0
+     *
+     * @param {[type]} m - [description]
+     *
+     * @return {[type]} [description]
+     */
     fromMat4: function (m)
     {
         var a = m.val;
@@ -69,6 +132,16 @@ var Matrix3 = new Class({
         return this;
     },
 
+    /**
+     * [description]
+     *
+     * @method Phaser.Math.Matrix3#fromArray
+     * @since 3.0.0
+     *
+     * @param {[type]} a - [description]
+     *
+     * @return {[type]} [description]
+     */
     fromArray: function (a)
     {
         var out = this.val;
@@ -86,6 +159,14 @@ var Matrix3 = new Class({
         return this;
     },
 
+    /**
+     * [description]
+     *
+     * @method Phaser.Math.Matrix3#identity
+     * @since 3.0.0
+     *
+     * @return {[type]} [description]
+     */
     identity: function ()
     {
         var out = this.val;
@@ -103,6 +184,14 @@ var Matrix3 = new Class({
         return this;
     },
 
+    /**
+     * [description]
+     *
+     * @method Phaser.Math.Matrix3#transpose
+     * @since 3.0.0
+     *
+     * @return {[type]} [description]
+     */
     transpose: function ()
     {
         var a = this.val;
@@ -120,6 +209,14 @@ var Matrix3 = new Class({
         return this;
     },
 
+    /**
+     * [description]
+     *
+     * @method Phaser.Math.Matrix3#invert
+     * @since 3.0.0
+     *
+     * @return {[type]} [description]
+     */
     invert: function ()
     {
         var a = this.val;
@@ -161,6 +258,14 @@ var Matrix3 = new Class({
         return this;
     },
 
+    /**
+     * [description]
+     *
+     * @method Phaser.Math.Matrix3#adjoint
+     * @since 3.0.0
+     *
+     * @return {[type]} [description]
+     */
     adjoint: function ()
     {
         var a = this.val;
@@ -188,6 +293,14 @@ var Matrix3 = new Class({
         return this;
     },
 
+    /**
+     * [description]
+     *
+     * @method Phaser.Math.Matrix3#determinant
+     * @since 3.0.0
+     *
+     * @return {[type]} [description]
+     */
     determinant: function ()
     {
         var a = this.val;
@@ -205,6 +318,16 @@ var Matrix3 = new Class({
         return a00 * (a22 * a11 - a12 * a21) + a01 * (-a22 * a10 + a12 * a20) + a02 * (a21 * a10 - a11 * a20);
     },
 
+    /**
+     * [description]
+     *
+     * @method Phaser.Math.Matrix3#multiply
+     * @since 3.0.0
+     *
+     * @param {[type]} src - [description]
+     *
+     * @return {[type]} [description]
+     */
     multiply: function (src)
     {
         var a = this.val;
@@ -246,6 +369,16 @@ var Matrix3 = new Class({
         return this;
     },
 
+    /**
+     * [description]
+     *
+     * @method Phaser.Math.Matrix3#translate
+     * @since 3.0.0
+     *
+     * @param {[type]} v - [description]
+     *
+     * @return {[type]} [description]
+     */
     translate: function (v)
     {
         var a = this.val;
@@ -259,6 +392,16 @@ var Matrix3 = new Class({
         return this;
     },
 
+    /**
+     * [description]
+     *
+     * @method Phaser.Math.Matrix3#rotate
+     * @since 3.0.0
+     *
+     * @param {[type]} rad - [description]
+     *
+     * @return {[type]} [description]
+     */
     rotate: function (rad)
     {
         var a = this.val;
@@ -284,6 +427,16 @@ var Matrix3 = new Class({
         return this;
     },
 
+    /**
+     * [description]
+     *
+     * @method Phaser.Math.Matrix3#scale
+     * @since 3.0.0
+     *
+     * @param {[type]} v - [description]
+     *
+     * @return {[type]} [description]
+     */
     scale: function (v)
     {
         var a = this.val;
@@ -301,6 +454,16 @@ var Matrix3 = new Class({
         return this;
     },
 
+    /**
+     * [description]
+     *
+     * @method Phaser.Math.Matrix3#fromQuat
+     * @since 3.0.0
+     *
+     * @param {[type]} q - [description]
+     *
+     * @return {[type]} [description]
+     */
     fromQuat: function (q)
     {
         var x = q.x;
@@ -341,6 +504,16 @@ var Matrix3 = new Class({
         return this;
     },
 
+    /**
+     * [description]
+     *
+     * @method Phaser.Math.Matrix3#normalFromMat4
+     * @since 3.0.0
+     *
+     * @param {[type]} m - [description]
+     *
+     * @return {[type]} [description]
+     */
     normalFromMat4: function (m)
     {
         var a = m.val;

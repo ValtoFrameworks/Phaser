@@ -1,37 +1,32 @@
+/**
+ * @author       Richard Davey <rich@photonstorm.com>
+ * @copyright    2018 Photon Storm Ltd.
+ * @license      {@link https://github.com/photonstorm/phaser/blob/master/license.txt|MIT License}
+ */
+
 var OS = require('../device/OS');
 
-var isBooted = false;
-
 /**
- * [description]
+ * Inspects the readyState of the document. If the document is already complete then it invokes the given callback.
+ * If not complete it sets up several event listeners such as `deviceready`, and once those fire, it invokes the callback.
+ * Called automatically by the Phaser.Game instance. Should not usually be accessed directly.
  *
- * @function Phaser.Dom.DOMContentLoaded
+ * @function Phaser.DOM.DOMContentLoaded
  * @since 3.0.0
  *
  * @param {function} callback - The callback to be invoked when the device is ready and the DOM content is loaded.
- *
- * @return {boolean} Returns `false` if the document is already loaded, otherwise `true` if the callback is pending.
  */
 var DOMContentLoaded = function (callback)
 {
-    if (isBooted)
-    {
-        return false;
-    }
-
     if (document.readyState === 'complete' || document.readyState === 'interactive')
     {
-        isBooted = true;
-        
         callback();
 
-        return true;
+        return;
     }
 
     var check = function ()
     {
-        isBooted = true;
-
         document.removeEventListener('deviceready', check, true);
         document.removeEventListener('DOMContentLoaded', check, true);
         window.removeEventListener('load', check, true);
@@ -53,8 +48,6 @@ var DOMContentLoaded = function (callback)
         document.addEventListener('DOMContentLoaded', check, true);
         window.addEventListener('load', check, true);
     }
-    
-    return true;
 };
 
 module.exports = DOMContentLoaded;

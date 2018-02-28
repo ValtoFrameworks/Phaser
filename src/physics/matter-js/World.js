@@ -1,3 +1,9 @@
+/**
+ * @author       Richard Davey <rich@photonstorm.com>
+ * @copyright    2018 Photon Storm Ltd.
+ * @license      {@link https://github.com/photonstorm/phaser/blob/master/license.txt|MIT License}
+ */
+
 //  Phaser.Physics.Matter.World
 
 var Bodies = require('./lib/factory/Bodies');
@@ -10,7 +16,21 @@ var GetValue = require('../../utils/object/GetValue');
 var MatterBody = require('./lib/body/Body');
 var MatterEvents = require('./lib/core/Events');
 var MatterWorld = require('./lib/body/World');
+var MatterTileBody = require('./MatterTileBody');
 
+/**
+ * @classdesc
+ * [description]
+ *
+ * @class World
+ * @extends EventEmitter
+ * @memberOf Phaser.Physics.Matter
+ * @constructor
+ * @since 3.0.0
+ *
+ * @param {Phaser.Scene} scene - [description]
+ * @param {object} config - [description]
+ */
 var World = new Class({
 
     Extends: EventEmitter,
@@ -21,10 +41,31 @@ var World = new Class({
     {
         EventEmitter.call(this);
 
+        /**
+         * [description]
+         *
+         * @name Phaser.Physics.Matter.World#scene
+         * @type {Phaser.Scene}
+         * @since 3.0.0
+         */
         this.scene = scene;
 
+        /**
+         * [description]
+         *
+         * @name Phaser.Physics.Matter.World#engine
+         * @type {[type]}
+         * @since 3.0.0
+         */
         this.engine = Engine.create(config);
 
+        /**
+         * [description]
+         *
+         * @name Phaser.Physics.Matter.World#localWorld
+         * @type {[type]}
+         * @since 3.0.0
+         */
         this.localWorld = this.engine.world;
 
         var gravity = GetValue(config, 'gravity', null);
@@ -35,10 +76,14 @@ var World = new Class({
         }
 
         /**
-        * @property {object} walls - An object containing the 4 wall bodies that bound the physics world.
-        */
+         * An object containing the 4 wall bodies that bound the physics world.
+         *
+         * @name Phaser.Physics.Matter.World#walls
+         * @type {[type]}
+         * @since 3.0.0
+         */
         this.walls = { left: null, right: null, top: null, bottom: null };
-    
+
         if (GetFastValue(config, 'setBounds', false))
         {
             var boundsConfig = config['setBounds'];
@@ -63,12 +108,42 @@ var World = new Class({
             }
         }
 
-        this.isPaused = GetValue(config, 'isPaused', false);
+        /**
+         * [description]
+         *
+         * @name Phaser.Physics.Matter.World#enabled
+         * @type {boolean}
+         * @default true
+         * @since 3.0.0
+         */
+        this.enabled = GetValue(config, 'enabled', true);
 
+        /**
+         * [description]
+         *
+         * @name Phaser.Physics.Matter.World#drawDebug
+         * @type {boolean}
+         * @default false
+         * @since 3.0.0
+         */
         this.drawDebug = GetValue(config, 'debug', false);
 
+        /**
+         * [description]
+         *
+         * @name Phaser.Physics.Matter.World#debugGraphic
+         * @type {Phaser.GameObjects.Graphics}
+         * @since 3.0.0
+         */
         this.debugGraphic;
 
+        /**
+         * [description]
+         *
+         * @name Phaser.Physics.Matter.World#defaults
+         * @type {object}
+         * @since 3.0.0
+         */
         this.defaults = {
             debugShowBody: GetValue(config, 'debugShowBody', true),
             debugShowStaticBody: GetValue(config, 'debugShowStaticBody', true),
@@ -86,24 +161,33 @@ var World = new Class({
         this.setEventsProxy();
     },
 
+    /**
+     * [description]
+     *
+     * @method Phaser.Physics.Matter.World#setEventsProxy
+     * @since 3.0.0
+     */
     setEventsProxy: function ()
     {
         var _this = this;
         var engine = this.engine;
 
-        MatterEvents.on(engine, 'beforeUpdate', function (event) {
+        MatterEvents.on(engine, 'beforeUpdate', function (event)
+        {
 
             _this.emit('beforeupdate', event);
 
         });
 
-        MatterEvents.on(engine, 'afterUpdate', function (event) {
+        MatterEvents.on(engine, 'afterUpdate', function (event)
+        {
 
             _this.emit('afterupdate', event);
 
         });
 
-        MatterEvents.on(engine, 'collisionStart', function (event) {
+        MatterEvents.on(engine, 'collisionStart', function (event)
+        {
 
             var pairs = event.pairs;
             var bodyA;
@@ -119,7 +203,8 @@ var World = new Class({
 
         });
 
-        MatterEvents.on(engine, 'collisionActive', function (event) {
+        MatterEvents.on(engine, 'collisionActive', function (event)
+        {
 
             var pairs = event.pairs;
             var bodyA;
@@ -135,7 +220,8 @@ var World = new Class({
 
         });
 
-        MatterEvents.on(engine, 'collisionEnd', function (event) {
+        MatterEvents.on(engine, 'collisionEnd', function (event)
+        {
 
             var pairs = event.pairs;
             var bodyA;
@@ -153,23 +239,28 @@ var World = new Class({
     },
 
     /**
-    * Sets the bounds of the Physics world to match the given world pixel dimensions.
-    * You can optionally set which 'walls' to create: left, right, top or bottom.
-    * If none of the walls are given it will default to use the walls settings it had previously.
-    * I.e. if you previously told it to not have the left or right walls, and you then adjust the world size
-    * the newly created bounds will also not have the left and right walls.
-    * Explicitly state them in the parameters to override this.
-    *
-    * @method Phaser.Physics.P2#setBounds
-    * @param {number} x - The x coordinate of the top-left corner of the bounds.
-    * @param {number} y - The y coordinate of the top-left corner of the bounds.
-    * @param {number} width - The width of the bounds.
-    * @param {number} height - The height of the bounds.
-    * @param {boolean} [left=true] - If true will create the left bounds wall.
-    * @param {boolean} [right=true] - If true will create the right bounds wall.
-    * @param {boolean} [top=true] - If true will create the top bounds wall.
-    * @param {boolean} [bottom=true] - If true will create the bottom bounds wall.
-    */
+     * Sets the bounds of the Physics world to match the given world pixel dimensions.
+     * You can optionally set which 'walls' to create: left, right, top or bottom.
+     * If none of the walls are given it will default to use the walls settings it had previously.
+     * I.e. if you previously told it to not have the left or right walls, and you then adjust the world size
+     * the newly created bounds will also not have the left and right walls.
+     * Explicitly state them in the parameters to override this.
+     *
+     * @method Phaser.Physics.Matter.World#setBounds
+     * @since 3.0.0
+     *
+     * @param {number} x - The x coordinate of the top-left corner of the bounds.
+     * @param {number} y - The y coordinate of the top-left corner of the bounds.
+     * @param {number} width - The width of the bounds.
+     * @param {number} height - The height of the bounds.
+     * @param {number} [thickness=128] - The thickness of each wall, in pixels.
+     * @param {boolean} [left=true] - If true will create the left bounds wall.
+     * @param {boolean} [right=true] - If true will create the right bounds wall.
+     * @param {boolean} [top=true] - If true will create the top bounds wall.
+     * @param {boolean} [bottom=true] - If true will create the bottom bounds wall.
+     *
+     * @return {Phaser.Physics.Matter.World} This Matter World object.
+     */
     setBounds: function (x, y, width, height, thickness, left, right, top, bottom)
     {
         if (x === undefined) { x = 0; }
@@ -191,6 +282,19 @@ var World = new Class({
     },
 
     //  position = 'left', 'right', 'top' or 'bottom'
+    /**
+     * [description]
+     *
+     * @method Phaser.Physics.Matter.World#updateWall
+     * @since 3.0.0
+     *
+     * @param {[type]} add - [description]
+     * @param {[type]} position - [description]
+     * @param {[type]} x - [description]
+     * @param {[type]} y - [description]
+     * @param {[type]} width - [description]
+     * @param {[type]} height - [description]
+     */
     updateWall: function (add, position, x, y, width, height)
     {
         var wall = this.walls[position];
@@ -219,6 +323,14 @@ var World = new Class({
         }
     },
 
+    /**
+     * [description]
+     *
+     * @method Phaser.Physics.Matter.World#createDebugGraphic
+     * @since 3.0.0
+     *
+     * @return {Phaser.GameObjects.Graphics} [description]
+     */
     createDebugGraphic: function ()
     {
         var graphic = this.scene.sys.add.graphics({ x: 0, y: 0 });
@@ -232,6 +344,14 @@ var World = new Class({
         return graphic;
     },
 
+    /**
+     * [description]
+     *
+     * @method Phaser.Physics.Matter.World#disableGravity
+     * @since 3.0.0
+     *
+     * @return {Phaser.Physics.Matter.World} This Matter World object.
+     */
     disableGravity: function ()
     {
         this.localWorld.gravity.x = 0;
@@ -241,6 +361,18 @@ var World = new Class({
         return this;
     },
 
+    /**
+     * [description]
+     *
+     * @method Phaser.Physics.Matter.World#setGravity
+     * @since 3.0.0
+     *
+     * @param {number} [x=0] - [description]
+     * @param {number} [y] - [description]
+     * @param {number} [scale] - [description]
+     *
+     * @return {Phaser.Physics.Matter.World} This Matter World object.
+     */
     setGravity: function (x, y, scale)
     {
         if (x === undefined) { x = 0; }
@@ -257,6 +389,20 @@ var World = new Class({
         return this;
     },
 
+    /**
+     * [description]
+     *
+     * @method Phaser.Physics.Matter.World#create
+     * @since 3.0.0
+     *
+     * @param {[type]} x - [description]
+     * @param {[type]} y - [description]
+     * @param {[type]} width - [description]
+     * @param {[type]} height - [description]
+     * @param {[type]} options - [description]
+     *
+     * @return {[type]} [description]
+     */
     create: function (x, y, width, height, options)
     {
         var body = Bodies.rectangle(x, y, width, height, options);
@@ -267,6 +413,16 @@ var World = new Class({
     },
 
     //  object can be single or an array, and can be a body, composite or constraint
+    /**
+     * [description]
+     *
+     * @method Phaser.Physics.Matter.World#add
+     * @since 3.0.0
+     *
+     * @param {[type]} object - [description]
+     *
+     * @return {Phaser.Physics.Matter.World} This Matter World object.
+     */
     add: function (object)
     {
         MatterWorld.add(this.localWorld, object);
@@ -274,6 +430,17 @@ var World = new Class({
         return this;
     },
 
+    /**
+     * [description]
+     *
+     * @method Phaser.Physics.Matter.World#remove
+     * @since 3.0.0
+     *
+     * @param {[type]} object - [description]
+     * @param {boolean} deep - [description]
+     *
+     * @return {Phaser.Physics.Matter.World} This Matter World object.
+     */
     remove: function (object, deep)
     {
         var body = (object.body) ? object.body : object;
@@ -283,28 +450,163 @@ var World = new Class({
         return this;
     },
 
+    /**
+     * [description]
+     *
+     * @method Phaser.Physics.Matter.World#removeConstraint
+     * @since 3.0.0
+     *
+     * @param {[type]} constraint - [description]
+     * @param {boolean} deep - [description]
+     *
+     * @return {Phaser.Physics.Matter.World} This Matter World object.
+     */
+    removeConstraint: function (constraint, deep)
+    {
+        Composite.remove(this.localWorld, constraint, deep);
+
+        return this;
+    },
+
+    /**
+     * Adds MatterTileBody instances for all the colliding tiles within the given tilemap layer. Set
+     * the appropriate tiles in your layer to collide before calling this method!
+     *
+     * @method Phaser.Physics.Matter.World#convertTilemapLayer
+     * @since 3.0.0
+     *
+     * @param {Phaser.GameObjects.StaticTilemapLayer|Phaser.GameObjects.DynamicTilemapLayer} tiles -
+     * An array of tiles.
+     * @param {object} [options] - Options to be passed to the MatterTileBody constructor. See
+     * Phaser.Physics.Matter.TileBody.
+     * 
+     * @return {Phaser.Physics.Matter.World} This Matter World object.
+     */
+    convertTilemapLayer: function (tilemapLayer, options)
+    {
+        var layerData = tilemapLayer.layer;
+        var tiles = tilemapLayer.getTilesWithin(0, 0, layerData.width, layerData.height, {isColliding: true});
+
+        this.convertTiles(tiles, options);
+
+        return this;
+    },
+
+    /**
+     * Adds MatterTileBody instances for the given tiles. This adds bodies regardless of whether the
+     * tiles are set to collide or not.
+     *
+     * @method Phaser.Physics.Matter.World#convertTiles
+     * @since 3.0.0
+     *
+     * @param {Phaser.GameObjects.Tile[]} tiles - An array of tiles.
+     * @param {object} [options] - Options to be passed to the MatterTileBody constructor. See
+     * Phaser.Physics.Matter.TileBody.
+     * 
+     * @return {Phaser.Physics.Matter.World} This Matter World object.
+     */
+    convertTiles: function (tiles, options)
+    {
+        if (tiles.length === 0)
+        {
+            return this;
+        }
+
+        for (var i = 0; i < tiles.length; i++)
+        {
+            new MatterTileBody(this, tiles[i], options);
+        }
+
+        return this;
+    },
+
+    /**
+     * [description]
+     *
+     * @method Phaser.Physics.Matter.World#nextGroup
+     * @since 3.0.0
+     *
+     * @param {[type]} isNonColliding - [description]
+     *
+     * @return {[type]} [description]
+     */
     nextGroup: function (isNonColliding)
     {
         return MatterBody.nextGroup(isNonColliding);
     },
 
+    /**
+     * [description]
+     *
+     * @method Phaser.Physics.Matter.World#nextCategory
+     * @since 3.0.0
+     *
+     * @return {[type]} [description]
+     */
     nextCategory: function ()
     {
         return MatterBody.nextCategory();
     },
 
-    update: function (time, delta)
+    /**
+     * [description]
+     *
+     * @method Phaser.Physics.Matter.World#pause
+     * @since 3.0.0
+     *
+     * @return {Phaser.Physics.Matter.World} This Matter World object.
+     */
+    pause: function ()
     {
-        if (this.isPaused)
-        {
-            return;
-        }
+        this.enabled = false;
 
-        var correction = 1;
+        this.emit('pause');
 
-        Engine.update(this.engine, delta, correction);
+        return this;
     },
 
+    /**
+     * [description]
+     *
+     * @method Phaser.Physics.Matter.World#resume
+     * @since 3.0.0
+     *
+     * @return {Phaser.Physics.Matter.World} This Matter World object.
+     */
+    resume: function ()
+    {
+        this.enabled = true;
+
+        this.emit('resume');
+
+        return this;
+    },
+
+    /**
+     * [description]
+     *
+     * @method Phaser.Physics.Matter.World#update
+     * @since 3.0.0
+     *
+     * @param {number} time - [description]
+     * @param {number} delta - [description]
+     */
+    update: function (time, delta)
+    {
+        if (this.enabled)
+        {
+            var correction = 1;
+
+            Engine.update(this.engine, delta, correction);
+        }
+    },
+
+    /**
+     * [description]
+     *
+     * @method Phaser.Physics.Matter.World#postUpdate
+     * @since 3.0.0
+     */
     postUpdate: function ()
     {
         if (!this.drawDebug)
@@ -320,35 +622,54 @@ var World = new Class({
 
         for (var i = 0; i < bodies.length; i++)
         {
-            var body = bodies[i];
-
-            if (!body.render.visible)
+            if (!bodies[i].render.visible)
             {
-                continue;
+                return;
             }
 
-            var vertices = body.vertices;
-
-            graphics.moveTo(vertices[0].x, vertices[0].y);
-
-            for (var j = 1; j < vertices.length; j++)
+            // Handle drawing both single bodies and compound bodies. If compound, draw both the
+            // convex hull (first part) and the rest of the bodies.
+            for (var j = 0; j < bodies[i].parts.length; j++)
             {
-                graphics.lineTo(vertices[j].x, vertices[j].y);
+                var body = bodies[i].parts[j];
+
+                var vertices = body.vertices;
+
+                graphics.moveTo(vertices[0].x, vertices[0].y);
+
+                for (var k = 1; k < vertices.length; k++)
+                {
+                    graphics.lineTo(vertices[k].x, vertices[k].y);
+                }
+
+                graphics.lineTo(vertices[0].x, vertices[0].y);
+
+                graphics.strokePath();
             }
-
-            graphics.lineTo(vertices[0].x, vertices[0].y);
-
-            graphics.strokePath();
         }
     },
 
+    /**
+     * [description]
+     *
+     * @method Phaser.Physics.Matter.World#fromPath
+     * @since 3.0.0
+     *
+     * @param {[type]} path - [description]
+     * @param {[type]} points - [description]
+     *
+     * @return {[type]} [description]
+     */
     fromPath: function (path, points)
     {
         if (points === undefined) { points = []; }
 
+        // var pathPattern = /L?\s*([-\d.e]+)[\s,]*([-\d.e]+)*/ig;
+
+        // eslint-disable-next-line no-useless-escape
         var pathPattern = /L?\s*([\-\d\.e]+)[\s,]*([\-\d\.e]+)*/ig;
 
-        path.replace(pathPattern, function(match, x, y)
+        path.replace(pathPattern, function (match, x, y)
         {
             points.push({ x: parseFloat(x), y: parseFloat(y) });
         });
@@ -356,12 +677,25 @@ var World = new Class({
         return points;
     },
 
+    /**
+     * [description]
+     *
+     * @method Phaser.Physics.Matter.World#shutdown
+     * @since 3.0.0
+     */
     shutdown: function ()
     {
         MatterWorld.clear(this.localWorld, false);
+
         Engine.clear(this.engine);
     },
 
+    /**
+     * [description]
+     *
+     * @method Phaser.Physics.Matter.World#destroy
+     * @since 3.0.0
+     */
     destroy: function ()
     {
         this.shutdown();

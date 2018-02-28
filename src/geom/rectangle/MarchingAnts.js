@@ -1,3 +1,9 @@
+/**
+ * @author       Richard Davey <rich@photonstorm.com>
+ * @copyright    2018 Photon Storm Ltd.
+ * @license      {@link https://github.com/photonstorm/phaser/blob/master/license.txt|MIT License}
+ */
+
 var Perimeter = require('./Perimeter');
 var Point = require('../point/Point');
 
@@ -50,6 +56,7 @@ var MarchingAnts = function (rect, step, quantity, out)
 
         switch (face)
         {
+
             //  Top face
             case 0:
                 x += step;

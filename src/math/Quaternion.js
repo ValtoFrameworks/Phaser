@@ -1,3 +1,9 @@
+/**
+ * @author       Richard Davey <rich@photonstorm.com>
+ * @copyright    2018 Photon Storm Ltd.
+ * @license      {@link https://github.com/photonstorm/phaser/blob/master/license.txt|MIT License}
+ */
+
 //  Adapted from [gl-matrix](https://github.com/toji/gl-matrix) by toji 
 //  and [vecmath](https://github.com/mattdesl/vecmath) by mattdesl
 
@@ -17,12 +23,62 @@ var yUnitVec3 = new Vector3(0, 1, 0);
 var tmpvec = new Vector3();
 var tmpMat3 = new Matrix3();
 
+/**
+ * @classdesc
+ * [description]
+ *
+ * @class Quaternion
+ * @memberOf Phaser.Math
+ * @constructor
+ * @since 3.0.0
+ *
+ * @param {number} [x] - [description]
+ * @param {number} [y] - [description]
+ * @param {number} [z] - [description]
+ * @param {number} [w] - [description]
+ */
 var Quaternion = new Class({
 
     initialize:
 
     function Quaternion (x, y, z, w)
     {
+        /**
+         * The x component of this Quaternion.
+         *
+         * @name Phaser.Math.Quaternion#x
+         * @type {number}
+         * @default 0
+         * @since 3.0.0
+         */
+
+        /**
+         * The y component of this Quaternion.
+         *
+         * @name Phaser.Math.Quaternion#y
+         * @type {number}
+         * @default 0
+         * @since 3.0.0
+         */
+
+        /**
+         * The z component of this Quaternion.
+         *
+         * @name Phaser.Math.Quaternion#z
+         * @type {number}
+         * @default 0
+         * @since 3.0.0
+         */
+
+        /**
+         * The w component of this Quaternion.
+         *
+         * @name Phaser.Math.Quaternion#w
+         * @type {number}
+         * @default 0
+         * @since 3.0.0
+         */
+
         if (typeof x === 'object')
         {
             this.x = x.x || 0;
@@ -39,6 +95,16 @@ var Quaternion = new Class({
         }
     },
 
+    /**
+     * [description]
+     *
+     * @method Phaser.Math.Quaternion#copy
+     * @since 3.0.0
+     *
+     * @param {[type]} src - [description]
+     *
+     * @return {[type]} [description]
+     */
     copy: function (src)
     {
         this.x = src.x;
@@ -49,6 +115,19 @@ var Quaternion = new Class({
         return this;
     },
 
+    /**
+     * [description]
+     *
+     * @method Phaser.Math.Quaternion#set
+     * @since 3.0.0
+     *
+     * @param {[type]} x - [description]
+     * @param {[type]} y - [description]
+     * @param {[type]} z - [description]
+     * @param {[type]} w - [description]
+     *
+     * @return {[type]} [description]
+     */
     set: function (x, y, z, w)
     {
         if (typeof x === 'object')
@@ -69,6 +148,16 @@ var Quaternion = new Class({
         return this;
     },
 
+    /**
+     * [description]
+     *
+     * @method Phaser.Math.Quaternion#add
+     * @since 3.0.0
+     *
+     * @param {[type]} v - [description]
+     *
+     * @return {[type]} [description]
+     */
     add: function (v)
     {
         this.x += v.x;
@@ -79,6 +168,16 @@ var Quaternion = new Class({
         return this;
     },
 
+    /**
+     * [description]
+     *
+     * @method Phaser.Math.Quaternion#subtract
+     * @since 3.0.0
+     *
+     * @param {[type]} v - [description]
+     *
+     * @return {[type]} [description]
+     */
     subtract: function (v)
     {
         this.x -= v.x;
@@ -89,6 +188,16 @@ var Quaternion = new Class({
         return this;
     },
 
+    /**
+     * [description]
+     *
+     * @method Phaser.Math.Quaternion#scale
+     * @since 3.0.0
+     *
+     * @param {[type]} scale - [description]
+     *
+     * @return {[type]} [description]
+     */
     scale: function (scale)
     {
         this.x *= scale;
@@ -99,6 +208,14 @@ var Quaternion = new Class({
         return this;
     },
 
+    /**
+     * [description]
+     *
+     * @method Phaser.Math.Quaternion#length
+     * @since 3.0.0
+     *
+     * @return {[type]} [description]
+     */
     length: function ()
     {
         var x = this.x;
@@ -109,6 +226,14 @@ var Quaternion = new Class({
         return Math.sqrt(x * x + y * y + z * z + w * w);
     },
 
+    /**
+     * [description]
+     *
+     * @method Phaser.Math.Quaternion#lengthSq
+     * @since 3.0.0
+     *
+     * @return {[type]} [description]
+     */
     lengthSq: function ()
     {
         var x = this.x;
@@ -119,6 +244,14 @@ var Quaternion = new Class({
         return x * x + y * y + z * z + w * w;
     },
 
+    /**
+     * [description]
+     *
+     * @method Phaser.Math.Quaternion#normalize
+     * @since 3.0.0
+     *
+     * @return {[type]} [description]
+     */
     normalize: function ()
     {
         var x = this.x;
@@ -140,11 +273,32 @@ var Quaternion = new Class({
         return this;
     },
 
+    /**
+     * [description]
+     *
+     * @method Phaser.Math.Quaternion#dot
+     * @since 3.0.0
+     *
+     * @param {[type]} v - [description]
+     *
+     * @return {[type]} [description]
+     */
     dot: function (v)
     {
         return this.x * v.x + this.y * v.y + this.z * v.z + this.w * v.w;
     },
 
+    /**
+     * [description]
+     *
+     * @method Phaser.Math.Quaternion#lerp
+     * @since 3.0.0
+     *
+     * @param {[type]} v - [description]
+     * @param {[type]} t - [description]
+     *
+     * @return {[type]} [description]
+     */
     lerp: function (v, t)
     {
         if (t === undefined) { t = 0; }
@@ -162,6 +316,17 @@ var Quaternion = new Class({
         return this;
     },
 
+    /**
+     * [description]
+     *
+     * @method Phaser.Math.Quaternion#rotationTo
+     * @since 3.0.0
+     *
+     * @param {[type]} a - [description]
+     * @param {[type]} b - [description]
+     *
+     * @return {[type]} [description]
+     */
     rotationTo: function (a, b)
     {
         var dot = a.x * b.x + a.y * b.y + a.z * b.z;
@@ -200,6 +365,18 @@ var Quaternion = new Class({
         }
     },
 
+    /**
+     * [description]
+     *
+     * @method Phaser.Math.Quaternion#setAxes
+     * @since 3.0.0
+     *
+     * @param {[type]} view - [description]
+     * @param {[type]} right - [description]
+     * @param {[type]} up - [description]
+     *
+     * @return {[type]} [description]
+     */
     setAxes: function (view, right, up)
     {
         var m = tmpMat3.val;
@@ -219,6 +396,14 @@ var Quaternion = new Class({
         return this.fromMat3(tmpMat3).normalize();
     },
 
+    /**
+     * [description]
+     *
+     * @method Phaser.Math.Quaternion#identity
+     * @since 3.0.0
+     *
+     * @return {[type]} [description]
+     */
     identity: function ()
     {
         this.x = 0;
@@ -229,6 +414,17 @@ var Quaternion = new Class({
         return this;
     },
 
+    /**
+     * [description]
+     *
+     * @method Phaser.Math.Quaternion#setAxisAngle
+     * @since 3.0.0
+     *
+     * @param {[type]} axis - [description]
+     * @param {[type]} rad - [description]
+     *
+     * @return {[type]} [description]
+     */
     setAxisAngle: function (axis, rad)
     {
         rad = rad * 0.5;
@@ -243,6 +439,16 @@ var Quaternion = new Class({
         return this;
     },
 
+    /**
+     * [description]
+     *
+     * @method Phaser.Math.Quaternion#multiply
+     * @since 3.0.0
+     *
+     * @param {[type]} b - [description]
+     *
+     * @return {[type]} [description]
+     */
     multiply: function (b)
     {
         var ax = this.x;
@@ -263,6 +469,17 @@ var Quaternion = new Class({
         return this;
     },
 
+    /**
+     * [description]
+     *
+     * @method Phaser.Math.Quaternion#slerp
+     * @since 3.0.0
+     *
+     * @param {[type]} b - [description]
+     * @param {[type]} t - [description]
+     *
+     * @return {[type]} [description]
+     */
     slerp: function (b, t)
     {
         // benchmarks: http://jsperf.com/quaternion-slerp-implementations
@@ -315,6 +532,14 @@ var Quaternion = new Class({
         return this;
     },
 
+    /**
+     * [description]
+     *
+     * @method Phaser.Math.Quaternion#invert
+     * @since 3.0.0
+     *
+     * @return {[type]} [description]
+     */
     invert: function ()
     {
         var a0 = this.x;
@@ -335,6 +560,14 @@ var Quaternion = new Class({
         return this;
     },
 
+    /**
+     * [description]
+     *
+     * @method Phaser.Math.Quaternion#conjugate
+     * @since 3.0.0
+     *
+     * @return {[type]} [description]
+     */
     conjugate: function ()
     {
         this.x = -this.x;
@@ -344,6 +577,16 @@ var Quaternion = new Class({
         return this;
     },
 
+    /**
+     * [description]
+     *
+     * @method Phaser.Math.Quaternion#rotateX
+     * @since 3.0.0
+     *
+     * @param {[type]} rad - [description]
+     *
+     * @return {[type]} [description]
+     */
     rotateX: function (rad)
     {
         rad *= 0.5;
@@ -364,6 +607,16 @@ var Quaternion = new Class({
         return this;
     },
 
+    /**
+     * [description]
+     *
+     * @method Phaser.Math.Quaternion#rotateY
+     * @since 3.0.0
+     *
+     * @param {[type]} rad - [description]
+     *
+     * @return {[type]} [description]
+     */
     rotateY: function (rad)
     {
         rad *= 0.5;
@@ -384,6 +637,16 @@ var Quaternion = new Class({
         return this;
     },
 
+    /**
+     * [description]
+     *
+     * @method Phaser.Math.Quaternion#rotateZ
+     * @since 3.0.0
+     *
+     * @param {[type]} rad - [description]
+     *
+     * @return {[type]} [description]
+     */
     rotateZ: function (rad)
     {
         rad *= 0.5;
@@ -404,6 +667,14 @@ var Quaternion = new Class({
         return this;
     },
 
+    /**
+     * [description]
+     *
+     * @method Phaser.Math.Quaternion#calculateW
+     * @since 3.0.0
+     *
+     * @return {[type]} [description]
+     */
     calculateW: function ()
     {
         var x = this.x;
@@ -415,6 +686,16 @@ var Quaternion = new Class({
         return this;
     },
 
+    /**
+     * [description]
+     *
+     * @method Phaser.Math.Quaternion#fromMat3
+     * @since 3.0.0
+     *
+     * @param {[type]} mat - [description]
+     *
+     * @return {[type]} [description]
+     */
     fromMat3: function (mat)
     {
         // benchmarks:
@@ -477,12 +758,5 @@ var Quaternion = new Class({
     }
 
 });
-
-Quaternion.prototype.idt = Quaternion.prototype.identity;
-Quaternion.prototype.sub = Quaternion.prototype.subtract;
-Quaternion.prototype.mul = Quaternion.prototype.multiply;
-Quaternion.prototype.len = Quaternion.prototype.length;
-Quaternion.prototype.lenSq = Quaternion.prototype.lengthSq;
-Quaternion.prototype.reset = Quaternion.prototype.idt;
 
 module.exports = Quaternion;

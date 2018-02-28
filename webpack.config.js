@@ -12,7 +12,7 @@ module.exports = {
     },
 
     output: {
-        path: `${__dirname}/dist/`,
+        path: `${__dirname}/build/`,
         filename: '[name].js',
         library: 'Phaser',
         libraryTarget: 'umd',
@@ -20,6 +20,15 @@ module.exports = {
         devtoolModuleFilenameTemplate: "webpack:///[resource-path]", // string
         devtoolFallbackModuleFilenameTemplate: "webpack:///[resource-path]?[hash]", // string
         umdNamedDefine: true,
+    },
+
+    module: {
+        rules: [
+          {
+            test: [ /\.vert$/, /\.frag$/ ],
+            use: 'raw-loader'
+          }
+        ]
     },
 
     plugins: [
@@ -30,12 +39,11 @@ module.exports = {
         }),
 
         new WebpackShellPlugin({
-            onBuildStart: 'node create-checksum.js',
-            onBuildEnd: 'node copy-to-examples.js'
+            onBuildExit: 'node copy-to-examples.js'
         })
 
     ],
 
-    devtool: 'inline-source-map'
+    devtool: 'source-map'
 
 };

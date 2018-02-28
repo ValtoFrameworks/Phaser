@@ -1,4 +1,20 @@
+/**
+ * @author       Richard Davey <rich@photonstorm.com>
+ * @copyright    2018 Photon Storm Ltd.
+ * @license      {@link https://github.com/photonstorm/phaser/blob/master/license.txt|MIT License}
+ */
 
+/**
+ * Used internally by the KeyboardManager.
+ *
+ * @function Phaser.Input.Keyboard.Keys.ProcessKeyDown
+ * @since 3.0.0
+ *
+ * @param {Phaser.Input.Keyboard.Key} key - [description]
+ * @param {[type]} event - [description]
+ *
+ * @return {Phaser.Input.Keyboard.Key} [description]
+ */
 var ProcessKeyDown = function (key, event)
 {
     key.originalEvent = event;

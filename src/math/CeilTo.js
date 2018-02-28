@@ -1,4 +1,10 @@
 /**
+ * @author       Richard Davey <rich@photonstorm.com>
+ * @copyright    2018 Photon Storm Ltd.
+ * @license      {@link https://github.com/photonstorm/phaser/blob/master/license.txt|MIT License}
+ */
+
+/**
  * [description]
  *
  * @function Phaser.Math.CeilTo
@@ -6,7 +12,7 @@
  *
  * @param {number} value - [description]
  * @param {number} [place=0] - [description]
- * @param {integer]} [base=10] - [description]
+ * @param {integer} [base=10] - [description]
  *
  * @return {number} [description]
  */

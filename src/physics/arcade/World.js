@@ -25,6 +25,7 @@ var Set = require('../../structs/Set');
 var StaticBody = require('./StaticBody');
 var TileIntersectsBody = require('./tilemap/TileIntersectsBody');
 var Vector2 = require('../../math/Vector2');
+var Wrap = require('../../math/Wrap');
 
 /**
  * @classdesc
@@ -267,11 +268,11 @@ var World = new Class({
      * @since 3.0.0
      *
      * @param {Phaser.GameObjects.GameObject|Phaser.GameObjects.GameObject[]} object - [description]
-     * @param {integer} [type] - [description]
+     * @param {integer} [bodyType] - The type of Body to create. Either `DYNAMIC_BODY` or `STATIC_BODY`.
      */
-    enable: function (object, type)
+    enable: function (object, bodyType)
     {
-        if (type === undefined) { type = CONST.DYNAMIC_BODY; }
+        if (bodyType === undefined) { bodyType = CONST.DYNAMIC_BODY; }
 
         var i = 1;
 
@@ -284,22 +285,22 @@ var World = new Class({
                 if (object[i].hasOwnProperty('children'))
                 {
                     //  If it's a Group then we do it on the children regardless
-                    this.enable(object[i].children.entries, type);
+                    this.enable(object[i].children.entries, bodyType);
                 }
                 else
                 {
-                    this.enableBody(object[i], type);
+                    this.enableBody(object[i], bodyType);
                 }
             }
         }
         else if (object.hasOwnProperty('children'))
         {
             //  If it's a Group then we do it on the children regardless
-            this.enable(object.children.entries, type);
+            this.enable(object.children.entries, bodyType);
         }
         else
         {
-            this.enableBody(object, type);
+            this.enableBody(object, bodyType);
         }
     },
 
@@ -310,21 +311,21 @@ var World = new Class({
      * @since 3.0.0
      *
      * @param {Phaser.GameObjects.GameObject} object - [description]
-     * @param {integer} type - [description]
+     * @param {integer} [bodyType] - The type of Body to create. Either `DYNAMIC_BODY` or `STATIC_BODY`.
      *
      * @return {Phaser.GameObjects.GameObject} [description]
      */
-    enableBody: function (object, type)
+    enableBody: function (object, bodyType)
     {
         if (object.body === null)
         {
-            if (type === CONST.DYNAMIC_BODY)
+            if (bodyType === CONST.DYNAMIC_BODY)
             {
                 object.body = new Body(this, object);
 
                 this.bodies.set(object.body);
             }
-            else if (type === CONST.STATIC_BODY)
+            else if (bodyType === CONST.STATIC_BODY)
             {
                 object.body = new StaticBody(this, object);
 
@@ -617,7 +618,7 @@ var World = new Class({
      * @since 3.0.0
      *
      * @param {Phaser.Physics.Arcade.Collider} collider - [description]
-     * 
+     *
      * @return {Phaser.Physics.Arcade.World} This World object.
      */
     removeCollider: function (collider)
@@ -1364,10 +1365,11 @@ var World = new Class({
      */
     collideHandler: function (object1, object2, collideCallback, processCallback, callbackContext, overlapOnly)
     {
+        //  Collide Group with Self
         //  Only collide valid objects
         if (object2 === undefined && object1.isParent)
         {
-            return this.collideGroupVsSelf(object1, collideCallback, processCallback, callbackContext, overlapOnly);
+            return this.collideGroupVsGroup(object1, object1, collideCallback, processCallback, callbackContext, overlapOnly);
         }
 
         //  If neither of the objects are set then bail out
@@ -1529,7 +1531,7 @@ var World = new Class({
      * @since 3.0.0
      *
      * @param {Phaser.GameObjects.Group} group - [description]
-     * @param {[type]} tilemapLayer - [description]
+     * @param {Phaser.Tilemaps.DynamicTilemapLayer|Phaser.Tilemaps.StaticTilemapLayer} tilemapLayer - [description]
      * @param {function} collideCallback - [description]
      * @param {function} processCallback - [description]
      * @param {object} callbackContext - [description]
@@ -1569,7 +1571,7 @@ var World = new Class({
      * @since 3.0.0
      *
      * @param {Phaser.GameObjects.GameObject} sprite - [description]
-     * @param {[type]} tilemapLayer - [description]
+     * @param {Phaser.Tilemaps.DynamicTilemapLayer|Phaser.Tilemaps.StaticTilemapLayer} tilemapLayer - [description]
      * @param {function} collideCallback - [description]
      * @param {function} processCallback - [description]
      * @param {object} callbackContext - [description]
@@ -1689,6 +1691,80 @@ var World = new Class({
         {
             this.collideSpriteVsGroup(children[i], group2, collideCallback, processCallback, callbackContext, overlapOnly);
         }
+    },
+
+    /**
+    * Wrap an object's coordinates (or several objects' coordinates) within {@link Phaser.Physics.Arcade.World#bounds}.
+    *
+    * If the object is outside any boundary edge (left, top, right, bottom), it will be moved to the same offset from the opposite edge (the interior).
+    *
+    * @method Phaser.Physics.Arcade.World#wrap
+    * @since 3.3.0
+    *
+    * @param {any} object - A Game Object, a Group, an object with `x` and `y` coordinates, or an array of such objects.
+    * @param {number} [padding=0] - An amount added to each boundary edge during the operation.
+    */
+    wrap: function (object, padding)
+    {
+        if (object.body)
+        {
+            this.wrapObject(object, padding);
+        }
+        else if (object.getChildren)
+        {
+            this.wrapArray(object.getChildren(), padding);
+        }
+        else if (Array.isArray(object))
+        {
+            this.wrapArray(object, padding);
+        }
+        else
+        {
+            this.wrapObject(object, padding);
+        }
+    },
+
+
+    /**
+    * Wrap each object's coordinates within {@link Phaser.Physics.Arcade.World#bounds}.
+    *
+    * @method Phaser.Physics.Arcade.World#wrapArray
+    * @since 3.3.0
+    *
+    * @param {any[]} arr
+    * @param {number} [padding=0] - An amount added to the boundary.
+    */
+    wrapArray: function (arr, padding)
+    {
+        if (arr.length === 0)
+        {
+            return;
+        }
+
+        for (var i = 0, len = arr.length; i < len; i++)
+        {
+            this.wrapObject(arr[i], padding);
+        }
+    },
+
+    /**
+    * Wrap an object's coordinates within {@link Phaser.Physics.Arcade.World#bounds}.
+    *
+    * @method Phaser.Physics.Arcade.World#wrapObject
+    * @since 3.3.0
+    *
+    * @param {any} object - A Game Object, a Physics Body, or any object with `x` and `y` coordinates
+    * @param {number} [padding=0] - An amount added to the boundary.
+    */
+    wrapObject: function (object, padding)
+    {
+        if (padding === undefined)
+        {
+            padding = 0;
+        }
+
+        object.x = Wrap(object.x, this.bounds.left - padding, this.bounds.right + padding);
+        object.y = Wrap(object.y, this.bounds.top - padding, this.bounds.bottom + padding);
     },
 
     /**

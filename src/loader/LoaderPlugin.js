@@ -388,7 +388,7 @@ var LoaderPlugin = new Class({
      */
     updateProgress: function ()
     {
-        this.progress = 1 - (this.list.size / this.totalToLoad);
+        this.progress = 1 - ((this.list.size + this.inflight.size) / this.totalToLoad);
 
         this.emit('progress', this.progress);
     },
@@ -656,7 +656,7 @@ var LoaderPlugin = new Class({
                 //  Yup, add them to the Texture Manager
 
                 //  Is the data JSON Hash or JSON Array?
-                if (Array.isArray(data[0].frames))
+                if (Array.isArray(data[0].textures) || Array.isArray(data[0].frames))
                 {
                     textures.addAtlasJSONArray(key, images, data);
                 }
@@ -812,10 +812,10 @@ var LoaderPlugin = new Class({
      * @method Phaser.Loader.LoaderPlugin#saveJSON
      * @since 3.0.0
      *
-     * @param {[type]} data - [description]
-     * @param {[type]} filename - [description]
+     * @param {any} data - [description]
+     * @param {string} [filename=file.json] - [description]
      *
-     * @return {[type]} [description]
+     * @return {Phaser.Loader.LoaderPlugin} This Loader plugin.
      */
     saveJSON: function (data, filename)
     {
@@ -828,9 +828,9 @@ var LoaderPlugin = new Class({
      * @method Phaser.Loader.LoaderPlugin#save
      * @since 3.0.0
      *
-     * @param {[type]} data - [description]
-     * @param {[type]} filename - [description]
-     * @param {[type]} filetype - [description]
+     * @param {any} data - [description]
+     * @param {string} [filename=file.json] - [description]
+     * @param {string} [filetype=application/json] - [description]
      *
      * @return {Phaser.Loader.LoaderPlugin} This Loader plugin.
      */

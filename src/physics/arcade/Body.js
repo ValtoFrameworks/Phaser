@@ -315,7 +315,7 @@ var Body = new Class({
          * [description]
          *
          * @name Phaser.Physics.Arcade.Body#worldBounce
-         * @type {?[type]}
+         * @type {?Phaser.Math.Vector2}
          * @default null
          * @since 3.0.0
          */
@@ -788,8 +788,8 @@ var Body = new Class({
 
         var sprite = this.gameObject;
 
-        this.position.x = sprite.x - sprite.displayOriginX + (sprite.scaleX * this.offset.x);
-        this.position.y = sprite.y - sprite.displayOriginY + (sprite.scaleY * this.offset.y);
+        this.position.x = sprite.x + sprite.scaleX * (this.offset.x - sprite.displayOriginX);
+        this.position.y = sprite.y + sprite.scaleY * (this.offset.y - sprite.displayOriginY);
 
         this.updateCenter();
 
@@ -1293,7 +1293,7 @@ var Body = new Class({
 
             if (this.isCircle)
             {
-                graphic.strokeCircle(x, y, this.radius);
+                graphic.strokeCircle(x, y, this.width / 2);
             }
             else
             {

@@ -60,16 +60,24 @@ var Texture = {
      * The Frame has to belong to the current Texture being used.
      *
      * It can be either a string or an index.
+     *
+     * Calling `setFrame` will modify the `width` and `height` properties of your Game Object.
+     * It will also change the `origin` if the Frame has a custom pivot point, as exported from packages like Texture Packer.
      * 
      * @method Phaser.GameObjects.Components.Texture#setFrame
      * @since 3.0.0
      *
      * @param {string|integer} frame - The name or index of the frame within the Texture.
+     * @param {boolean} [updateSize=true] - Should this call adjust the size of the Game Object?
+     * @param {boolean} [updateOrigin=true] - Should this call adjust the origin of the Game Object?
      * 
      * @return {Phaser.GameObjects.GameObject} This Game Object instance.
      */
-    setFrame: function (frame)
+    setFrame: function (frame, updateSize, updateOrigin)
     {
+        if (updateSize === undefined) { updateSize = true; }
+        if (updateOrigin === undefined) { updateOrigin = true; }
+
         this.frame = this.texture.get(frame);
 
         if (!this.frame.cutWidth || !this.frame.cutHeight)
@@ -81,9 +89,21 @@ var Texture = {
             this.renderFlags |= _FLAG;
         }
 
-        if (this.frame.customPivot)
+        if (this._sizeComponent && updateSize)
         {
-            this.setOrigin(this.frame.pivotX, this.frame.pivotY);
+            this.setSizeToFrame();
+        }
+
+        if (this._originComponent && updateOrigin)
+        {
+            if (this.frame.customPivot)
+            {
+                this.setOrigin(this.frame.pivotX, this.frame.pivotY);
+            }
+            else
+            {
+                this.updateDisplayOrigin();
+            }
         }
 
         return this;

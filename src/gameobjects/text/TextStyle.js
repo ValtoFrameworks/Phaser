@@ -30,7 +30,9 @@ var propertyMap = {
     fixedWidth: [ 'fixedWidth', 0 ],
     fixedHeight: [ 'fixedHeight', 0 ],
     rtl: [ 'rtl', false ],
-    testString: [ 'testString', '|MÉqgy' ],
+    testString: [ 'testString', '|MÃ‰qgy' ],
+    baselineX: [ 'baselineX', 1.2 ],
+    baselineY: [ 'baselineY', 1.4 ],
     wordWrapWidth: [ 'wordWrap.width', null ],
     wordWrapCallback: [ 'wordWrap.callback', null ],
     wordWrapCallbackScope: [ 'wordWrap.callbackScope', null ],
@@ -42,7 +44,7 @@ var propertyMap = {
  * [description]
  *
  * @class TextStyle
- * @memberOf Phaser.GameObjects.Components
+ * @memberOf Phaser.GameObjects.Text
  * @constructor
  * @since 3.0.0
  *
@@ -253,6 +255,26 @@ var TextStyle = new Class({
         this.testString;
 
         /**
+         * The amount of horizontal padding adding to the width of the text when calculating the font metrics.
+         *
+         * @name Phaser.GameObjects.Components.TextStyle#baselineX
+         * @type {number}
+         * @default 1.2
+         * @since 3.3.0
+         */
+        this.baselineX;
+
+        /**
+         * The amount of vertical padding adding to the width of the text when calculating the font metrics.
+         *
+         * @name Phaser.GameObjects.Components.TextStyle#baselineY
+         * @type {number}
+         * @default 1.4
+         * @since 3.3.0
+         */
+        this.baselineY;
+
+        /**
          * [description]
          *
          * @name Phaser.GameObjects.Components.TextStyle#_font
@@ -289,10 +311,10 @@ var TextStyle = new Class({
      * @method Phaser.GameObjects.Components.TextStyle#setStyle
      * @since 3.0.0
      *
-     * @param {[type]} style - [description]
+     * @param {CSSStyleRule} style - [description]
      * @param {boolean} [updateText=true] - [description]
      *
-     * @return {Phaser.GameObjects.Components.TextStyle} This TextStyle component.
+     * @return {Phaser.GameObjects.Text} The parent Text object.
      */
     setStyle: function (style, updateText)
     {
@@ -339,10 +361,12 @@ var TextStyle = new Class({
 
         if (updateText)
         {
-            this.update(true);
+            return this.update(true);
         }
-
-        return this;
+        else
+        {
+            return this.parent;
+        }
     },
 
     /**
@@ -351,8 +375,8 @@ var TextStyle = new Class({
      * @method Phaser.GameObjects.Components.TextStyle#syncFont
      * @since 3.0.0
      *
-     * @param {[type]} canvas - [description]
-     * @param {[type]} context - [description]
+     * @param {HTMLCanvasElement} canvas - [description]
+     * @param {CanvasRenderingContext2D} context - [description]
      */
     syncFont: function (canvas, context)
     {
@@ -365,8 +389,8 @@ var TextStyle = new Class({
      * @method Phaser.GameObjects.Components.TextStyle#syncStyle
      * @since 3.0.0
      *
-     * @param {[type]} canvas - [description]
-     * @param {[type]} context - [description]
+     * @param {HTMLCanvasElement} canvas - [description]
+     * @param {CanvasRenderingContext2D} context - [description]
      */
     syncStyle: function (canvas, context)
     {
@@ -386,8 +410,8 @@ var TextStyle = new Class({
      * @method Phaser.GameObjects.Components.TextStyle#syncShadow
      * @since 3.0.0
      *
-     * @param {[type]} context - [description]
-     * @param {[type]} enabled - [description]
+     * @param {CanvasRenderingContext2D} context - [description]
+     * @param {boolean} enabled - [description]
      */
     syncShadow: function (context, enabled)
     {
@@ -463,7 +487,7 @@ var TextStyle = new Class({
      * @method Phaser.GameObjects.Components.TextStyle#setFontFamily
      * @since 3.0.0
      *
-     * @param {[type]} family - [description]
+     * @param {string} family - [description]
      *
      * @return {Phaser.GameObjects.Text} The parent Text object.
      */
@@ -480,7 +504,7 @@ var TextStyle = new Class({
      * @method Phaser.GameObjects.Components.TextStyle#setFontStyle
      * @since 3.0.0
      *
-     * @param {[type]} style - [description]
+     * @param {string} style - [description]
      *
      * @return {Phaser.GameObjects.Text} The parent Text object.
      */
@@ -497,7 +521,7 @@ var TextStyle = new Class({
      * @method Phaser.GameObjects.Components.TextStyle#setFontSize
      * @since 3.0.0
      *
-     * @param {[type]} size - [description]
+     * @param {number|string} size - [description]
      *
      * @return {Phaser.GameObjects.Text} The parent Text object.
      */
@@ -519,7 +543,7 @@ var TextStyle = new Class({
      * @method Phaser.GameObjects.Components.TextStyle#setTestString
      * @since 3.0.0
      *
-     * @param {[type]} string - [description]
+     * @param {string} string - [description]
      *
      * @return {Phaser.GameObjects.Text} The parent Text object.
      */
@@ -548,12 +572,12 @@ var TextStyle = new Class({
 
         if (width)
         {
-            this.text.width = width;
+            this.parent.width = width;
         }
 
         if (height)
         {
-            this.text.height = height;
+            this.parent.height = height;
         }
 
         return this.update(false);

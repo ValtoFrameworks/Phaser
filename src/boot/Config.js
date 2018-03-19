@@ -55,7 +55,7 @@ var ValueToColor = require('../display/color/ValueToColor');
  * @property {HTMLCanvasElement} [?canvas=null] - [description]
  * @property {string} [?canvasStyle=null] - [description]
  * @property {object} [?scene=null] - [description]
- * @property {array} [seed] - [description]
+ * @property {string[]} [seed] - [description]
  * @property {string} [title=''] - [description]
  * @property {string} [url='http://phaser.io'] - [description]
  * @property {string} [version=''] - [description]
@@ -72,13 +72,18 @@ var ValueToColor = require('../display/color/ValueToColor');
  * @property {boolean} [banner=false] - [description]
  * @property {boolean} [banner.hidePhaser=false] - [description]
  * @property {string} [banner.text='#ffffff'] - [description]
- * @property {array} [banner.background] - [description]
+ * @property {string[]} [banner.background] - [description]
  * @property {FPSConfig} [?fps] - [description]
+ * @property {boolean} [antialias=true] - [description]
  * @property {boolean} [pixelArt=false] - [description]
  * @property {boolean} [autoResize=false] - [description]
  * @property {boolean} [roundPixels=false] - [description]
  * @property {boolean} [transparent=false] - [description]
  * @property {boolean} [clearBeforeRender=true] - [description]
+ * @property {boolean} [premultipliedAlpha=true] - [description]
+ * @property {boolean} [preserveDrawingBuffer=false] - [description]
+ * @property {boolean} [failIfMajorPerformanceCaveat=false] - [description]
+ * @property {boolean} [powerPreference='default'] - "high-performance", "low-power" or "default"
  * @property {string|number} [backgroundColor=0x000000] - [description]
  * @property {object} [?callbacks] - [description]
  * @property {function} [callbacks.preBoot=NOOP] - [description]
@@ -98,7 +103,7 @@ var ValueToColor = require('../display/color/ValueToColor');
  * @constructor
  * @since 3.0.0
  *
- * @param {object} [GameConfig] - The configuration object for your Phaser Game instance.
+ * @param {GameConfig} [GameConfig] - The configuration object for your Phaser Game instance.
  *
  */
 var Config = new Class({
@@ -181,11 +186,21 @@ var Config = new Class({
 
         this.fps = GetValue(config, 'fps', null);
 
-        this.pixelArt = GetValue(config, 'pixelArt', false);
-        this.autoResize = GetValue(config, 'autoResize', false);
-        this.roundPixels = GetValue(config, 'roundPixels', false);
-        this.transparent = GetValue(config, 'transparent', false);
-        this.clearBeforeRender = GetValue(config, 'clearBeforeRender', true);
+        //  Renderer Settings
+        //  These can either be in a `render` object within the Config, or specified on their own
+
+        var renderConfig = GetValue(config, 'render', config);
+
+        this.antialias = GetValue(renderConfig, 'antialias', true);
+        this.pixelArt = GetValue(renderConfig, 'pixelArt', false);
+        this.autoResize = GetValue(renderConfig, 'autoResize', false);
+        this.roundPixels = GetValue(renderConfig, 'roundPixels', false);
+        this.transparent = GetValue(renderConfig, 'transparent', false);
+        this.clearBeforeRender = GetValue(renderConfig, 'clearBeforeRender', true);
+        this.premultipliedAlpha = GetValue(renderConfig, 'premultipliedAlpha', true);
+        this.preserveDrawingBuffer = GetValue(renderConfig, 'preserveDrawingBuffer', false);
+        this.failIfMajorPerformanceCaveat = GetValue(renderConfig, 'failIfMajorPerformanceCaveat', false);
+        this.powerPreference = GetValue(renderConfig, 'powerPreference', 'default');
 
         var bgc = GetValue(config, 'backgroundColor', 0);
 
@@ -207,6 +222,7 @@ var Config = new Class({
         //      gravity: 0,
         //      cellSize: 64
         //  }
+
         this.physics = GetValue(config, 'physics', {});
         this.defaultPhysicsSystem = GetValue(this.physics, 'default', false);
 

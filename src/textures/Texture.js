@@ -193,9 +193,10 @@ var Texture = new Class({
      */
     get: function (name)
     {
-        if (name === undefined || name === null || (typeof name !== 'string' && typeof name !== 'number'))
+        //  null, undefined, empty string, zero
+        if (!name)
         {
-            name = (this.frameTotal === 1) ? '__BASE' : this.firstFrame;
+            name = this.firstFrame;
         }
 
         var frame = this.frames[name];
@@ -203,13 +204,11 @@ var Texture = new Class({
         if (!frame)
         {
             console.warn('No Texture.frame found with name ' + name);
-
-            return this.frames['__BASE'];
+             
+            frame = this.frames[this.firstFrame];
         }
-        else
-        {
-            return frame;
-        }
+        
+        return frame;
     },
 
     /**
@@ -312,7 +311,7 @@ var Texture = new Class({
      *
      * @param {string|integer} [name] - The string-based name, or integer based index, of the Frame to get from this Texture.
      *
-     * @return {Image|HTMLCanvasElement} The DOM Image or Canvas Element.
+     * @return {HTMLImageElement|HTMLCanvasElement} The DOM Image or Canvas Element.
      */
     getSourceImage: function (name)
     {

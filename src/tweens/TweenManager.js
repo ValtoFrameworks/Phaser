@@ -193,7 +193,7 @@ var TweenManager = new Class({
      * @method Phaser.Tweens.TweenManager#add
      * @since 3.0.0
      *
-     * @param {[type]} config - [description]
+     * @param {object} config - [description]
      *
      * @return {Phaser.Tweens.Tween} [description]
      */
@@ -293,16 +293,19 @@ var TweenManager = new Class({
         {
             tween = list[i];
 
-            //  Return true if the Tween should be started right away, otherwise false
-            if (tween.init())
+            if (tween.state === TWEEN_CONST.PENDING_ADD)
             {
-                tween.play();
+                //  Return true if the Tween should be started right away, otherwise false
+                if (tween.init())
+                {
+                    tween.play();
 
-                this._active.push(tween);
-            }
-            else
-            {
-                this._pending.push(tween);
+                    this._active.push(tween);
+                }
+                else
+                {
+                    this._pending.push(tween);
+                }
             }
         }
 

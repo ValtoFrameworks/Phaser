@@ -8,6 +8,7 @@ var AddToDOM = require('../../../dom/AddToDOM');
 var CanvasPool = require('../../../display/canvas/CanvasPool');
 var Class = require('../../../utils/Class');
 var Components = require('../../components');
+var CONST = require('../../../const');
 var GameObject = require('../../GameObject');
 var GetTextSize = require('../GetTextSize');
 var GetValue = require('../../../utils/object/GetValue');
@@ -149,7 +150,7 @@ var Text = new Class({
          * Allows you to add extra spacing if the browser is unable to accurately determine the true font dimensions.
          *
          * @name Phaser.GameObjects.Text#padding
-         * @type {object}
+         * @type {{left:number,right:number,top:number,bottom:number}}
          * @since 3.0.0
          */
         this.padding = { left: 0, right: 0, top: 0, bottom: 0 };
@@ -178,7 +179,7 @@ var Text = new Class({
          * [description]
          *
          * @name Phaser.GameObjects.Text#canvasTexture
-         * @type {?[type]}
+         * @type {HTMLCanvasElement}
          * @default null
          * @since 3.0.0
          */
@@ -201,15 +202,21 @@ var Text = new Class({
             this.setPadding(style.padding);
         }
 
+        if (style && style.lineSpacing)
+        {
+            this._lineSpacing = style.lineSpacing;
+        }
+
         this.setText(text);
 
-        var _this = this;
-
-        scene.sys.game.renderer.onContextRestored(function ()
+        if (scene.sys.game.config.renderType === CONST.WEBGL)
         {
-            _this.canvasTexture = null;
-            _this.dirty = true;
-        });
+            scene.sys.game.renderer.onContextRestored(function ()
+            {
+                this.canvasTexture = null;
+                this.dirty = true;
+            }, this);
+        }
     },
 
     /**

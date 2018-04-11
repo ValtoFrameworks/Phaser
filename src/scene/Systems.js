@@ -25,7 +25,7 @@ var Settings = require('./Settings');
  * @since 3.0.0
  *
  * @param {Phaser.Scene} scene - The Scene that owns this Systems instance.
- * @param {object} config - Scene specific configuration settings.
+ * @param {(string|SettingsConfig)} config - Scene specific configuration settings.
  */
 var Systems = new Class({
 
@@ -55,7 +55,7 @@ var Systems = new Class({
          * [description]
          *
          * @name Phaser.Scenes.Systems#config
-         * @type {object}
+         * @type {(string|SettingsConfig)}
          * @since 3.0.0
          */
         this.config = config;
@@ -64,7 +64,7 @@ var Systems = new Class({
          * [description]
          *
          * @name Phaser.Scenes.Systems#settings
-         * @type {object}
+         * @type {SettingsObject}
          * @since 3.0.0
          */
         this.settings = Settings.create(config);
@@ -111,7 +111,7 @@ var Systems = new Class({
          * [description]
          *
          * @name Phaser.Scenes.Systems#plugins
-         * @type {Phaser.Plugins.PluginManager}
+         * @type {Phaser.Boot.PluginManager}
          * @since 3.0.0
          */
         this.plugins;
@@ -167,7 +167,7 @@ var Systems = new Class({
          * [description]
          *
          * @name Phaser.Scenes.Systems#displayList
-         * @type {null}
+         * @type {Phaser.GameObjects.DisplayList}
          * @since 3.0.0
          */
         this.displayList;
@@ -176,7 +176,7 @@ var Systems = new Class({
          * [description]
          *
          * @name Phaser.Scenes.Systems#events
-         * @type {EventEmitter}
+         * @type {Phaser.Events.EventEmitter}
          * @since 3.0.0
          */
         this.events;
@@ -288,7 +288,7 @@ var Systems = new Class({
      * @method Phaser.Scenes.Systems#render
      * @since 3.0.0
      *
-     * @param {Phaser.Renderer.Canvas.CanvasRenderer|Phaser.Renderer.WebGL.WebGLRenderer} renderer - [description]
+     * @param {(Phaser.Renderer.Canvas.CanvasRenderer|Phaser.Renderer.WebGL.WebGLRenderer)} renderer - [description]
      */
     render: function (renderer)
     {
@@ -491,6 +491,7 @@ var Systems = new Class({
 
     /**
      * Start this Scene running and rendering.
+     * Called automatically by the SceneManager.
      *
      * @method Phaser.Scenes.Systems#start
      * @since 3.0.0
@@ -499,9 +500,12 @@ var Systems = new Class({
      */
     start: function (data)
     {
-        this.settings.status = CONST.START;
+        if (data)
+        {
+            this.settings.data = data;
+        }
 
-        this.settings.data = data;
+        this.settings.status = CONST.START;
 
         this.settings.active = true;
         this.settings.visible = true;

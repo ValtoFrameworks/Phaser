@@ -10,6 +10,21 @@ var ProcessKeyCombo = require('./ProcessKeyCombo');
 var ResetKeyCombo = require('./ResetKeyCombo');
 
 /**
+ * @callback KeyboardKeydownCallback
+ *
+ * @param {KeyboardEvent} event - [description]
+ */
+
+/**
+ * @typedef {object} KeyComboConfig
+ *
+ * @property {boolean} [resetOnWrongKey=true] - [description]
+ * @property {number} [maxKeyDelay=0] - [description]
+ * @property {boolean} [resetOnMatch=false] - [description]
+ * @property {boolean} [deleteOnMatch=false] - [description]
+ */
+
+/**
  * @classdesc
  * [description]
  *
@@ -25,8 +40,8 @@ var ResetKeyCombo = require('./ResetKeyCombo');
  * @since 3.0.0
  *
  * @param {Phaser.Input.Keyboard.KeyboardManager} keyboardManager - [description]
- * @param {string|integer[]|object[]} keys - [description]
- * @param {object} [config] - [description]
+ * @param {(string|integer[]|object[])} keys - [description]
+ * @param {KeyComboConfig} [config] - [description]
  */
 var KeyCombo = new Class({
 
@@ -219,7 +234,7 @@ var KeyCombo = new Class({
          * [description]
          *
          * @name Phaser.Input.Keyboard.KeyCombo#onKeyDown
-         * @type {function}
+         * @type {KeyboardKeydownCallback}
          * @since 3.0.0
          */
         this.onKeyDown = onKeyDownHandler;

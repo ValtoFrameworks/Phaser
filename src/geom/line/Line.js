@@ -19,10 +19,10 @@ var Vector2 = require('../../math/Vector2');
  * @constructor
  * @since 3.0.0
  *
- * @param {number} [x1] - [description]
- * @param {number} [y1] - [description]
- * @param {number} [x2] - [description]
- * @param {number} [y2] - [description]
+ * @param {number} [x1=0] - [description]
+ * @param {number} [y1=0] - [description]
+ * @param {number} [x2=0] - [description]
+ * @param {number} [y2=0] - [description]
  */
 var Line = new Class({
 
@@ -78,10 +78,12 @@ var Line = new Class({
      * @method Phaser.Geom.Line#getPoint
      * @since 3.0.0
      *
-     * @param {float} position - [description]
-     * @param {Phaser.Geom.Point|object} [output] - [description]
+     * @generic {Phaser.Geom.Point} O - [output,$return]
      *
-     * @return {Phaser.Geom.Point|object} A Point, or point-like object, containing the coordinates of the point around the ellipse.
+     * @param {float} position - [description]
+     * @param {(Phaser.Geom.Point|object)} [output] - [description]
+     *
+     * @return {(Phaser.Geom.Point|object)} A Point, or point-like object, containing the coordinates of the point around the ellipse.
      */
     getPoint: function (position, output)
     {
@@ -94,11 +96,13 @@ var Line = new Class({
      * @method Phaser.Geom.Line#getPoints
      * @since 3.0.0
      *
+     * @generic {Phaser.Geom.Point} O - [output,$return]
+     *
      * @param {integer} quantity - [description]
      * @param {integer} [stepRate] - [description]
-     * @param {array|Phaser.Geom.Point[]} [output] - [description]
+     * @param {(array|Phaser.Geom.Point[])} [output] - [description]
      *
-     * @return {array|Phaser.Geom.Point[]} [description]
+     * @return {(array|Phaser.Geom.Point[])} [description]
      */
     getPoints: function (quantity, stepRate, output)
     {
@@ -111,7 +115,9 @@ var Line = new Class({
      * @method Phaser.Geom.Line#getRandomPoint
      * @since 3.0.0
      *
-     * @param {Phaser.Geom.Point|object} point - [description]
+     * @generic {Phaser.Geom.Point} O - [point,$return]
+     *
+     * @param {(Phaser.Geom.Point|object)} [point] - [description]
      *
      * @return {Phaser.Geom.Point} [description]
      */
@@ -155,6 +161,8 @@ var Line = new Class({
      * @method Phaser.Geom.Line#getPointA
      * @since 3.0.0
      *
+     * @generic {Phaser.Math.Vector2} O - [vec2,$return]
+     *
      * @param {Phaser.Math.Vector2} [vec2] - A Vector2 object to set the results in. If `undefined` a new Vector2 will be created.
      *
      * @return {Phaser.Math.Vector2} A Vector2 object that corresponds to the start of this Line.
@@ -163,7 +171,7 @@ var Line = new Class({
     {
         if (vec2 === undefined) { vec2 = new Vector2(); }
 
-        vec2.setTo(this.x1, this.y1);
+        vec2.set(this.x1, this.y1);
 
         return vec2;
     },
@@ -174,6 +182,8 @@ var Line = new Class({
      * @method Phaser.Geom.Line#getPointB
      * @since 3.0.0
      *
+     * @generic {Phaser.Math.Vector2} O - [vec2,$return]
+     *
      * @param {Phaser.Math.Vector2} [vec2] - A Vector2 object to set the results in. If `undefined` a new Vector2 will be created.
      *
      * @return {Phaser.Math.Vector2} A Vector2 object that corresponds to the start of this Line.
@@ -182,7 +192,7 @@ var Line = new Class({
     {
         if (vec2 === undefined) { vec2 = new Vector2(); }
 
-        vec2.setTo(this.x2, this.y2);
+        vec2.set(this.x2, this.y2);
 
         return vec2;
     },

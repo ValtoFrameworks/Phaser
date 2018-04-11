@@ -26,6 +26,10 @@ var TimeStep = require('./TimeStep');
 var VisibilityHandler = require('./VisibilityHandler');
 
 /**
+ * @callback GameStepCallback
+ */
+
+/**
  * @classdesc
  * The Phaser.Game instance is the main controller for the entire Phaser game. It is responsible
  * for handling the boot process, parsing the configuration values, creating the renderer,
@@ -40,7 +44,7 @@ var VisibilityHandler = require('./VisibilityHandler');
  * @constructor
  * @since 3.0.0
  *
- * @param {object} [GameConfig] - The configuration object for your Phaser Game instance.
+ * @param {GameConfig} [GameConfig] - The configuration object for your Phaser Game instance.
  */
 var Game = new Class({
 
@@ -64,7 +68,7 @@ var Game = new Class({
          * A reference to either the Canvas or WebGL Renderer that this Game is using.
          *
          * @name Phaser.Game#renderer
-         * @type {Phaser.Renderer.Canvas.CanvasRenderer|Phaser.Renderer.WebGL.WebGLRenderer}
+         * @type {(Phaser.Renderer.Canvas.CanvasRenderer|Phaser.Renderer.WebGL.WebGLRenderer)}
          * @since 3.0.0
          */
         this.renderer = null;
@@ -111,7 +115,7 @@ var Game = new Class({
          * An Event Emitter which is used to broadcast game-level events from the global systems.
          *
          * @name Phaser.Game#events
-         * @type {EventEmitter}
+         * @type {Phaser.Events.EventEmitter}
          * @since 3.0.0
          */
         this.events = new EventEmitter();
@@ -150,7 +154,7 @@ var Game = new Class({
         this.cache = new CacheManager(this);
 
         /**
-         * [description]
+         * An instance of the Data Manager
          *
          * @name Phaser.Game#registry
          * @type {Phaser.Data.DataManager}
@@ -187,7 +191,7 @@ var Game = new Class({
          * Used by various systems to determine capabilities and code paths.
          *
          * @name Phaser.Game#device
-         * @type {Phaser.Device}
+         * @type {Phaser.DeviceConf}
          * @since 3.0.0
          */
         this.device = Device;
@@ -198,7 +202,7 @@ var Game = new Class({
          * The Sound Manager is a global system responsible for the playback and updating of all audio in your game.
          *
          * @name Phaser.Game#sound
-         * @type {Phaser.BaseSoundManager}
+         * @type {Phaser.Sound.BaseSoundManager}
          * @since 3.0.0
          */
         this.sound = SoundManagerCreator.create(this);
@@ -232,7 +236,7 @@ var Game = new Class({
          * It is set automatically when the Game boot process has completed.
          *
          * @name Phaser.Game#onStepCallback
-         * @type {function}
+         * @type {GameStepCallback}
          * @private
          * @since 3.0.0
          */
@@ -319,7 +323,7 @@ var Game = new Class({
      * the Scenes for rendering, but it won't have actually drawn anything yet.
      *
      * @event Phaser.Game#prerenderEvent
-     * @param {Phaser.Renderer.CanvasRenderer|Phaser.Renderer.WebGLRenderer} renderer - A reference to the current renderer.
+     * @param {(Phaser.Renderer.Canvas.CanvasRenderer|Phaser.Renderer.WebGL.WebGLRenderer)} renderer - A reference to the current renderer.
      */
 
     /**
@@ -329,7 +333,7 @@ var Game = new Class({
      * Every Scene will have rendered and drawn to the canvas.
      *
      * @event Phaser.Game#postrenderEvent
-     * @param {Phaser.Renderer.CanvasRenderer|Phaser.Renderer.WebGLRenderer} renderer - A reference to the current renderer.
+     * @param {(Phaser.Renderer.Canvas.CanvasRenderer|Phaser.Renderer.WebGL.WebGLRenderer)} renderer - A reference to the current renderer.
      */
 
     /**
@@ -534,7 +538,10 @@ var Game = new Class({
 
         this.scene.destroy();
 
-        this.renderer.destroy();
+        if (this.renderer)
+        {
+            this.renderer.destroy();
+        }
 
         this.events.emit('destroy');
 
@@ -542,7 +549,7 @@ var Game = new Class({
 
         this.onStepCallback = null;
 
-        if (removeCanvas)
+        if (removeCanvas && this.canvas)
         {
             CanvasPool.remove(this.canvas);
         }

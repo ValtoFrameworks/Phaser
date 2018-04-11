@@ -5,13 +5,14 @@
  */
 
 var Class = require('../../utils/Class');
+var DegToRad = require('../../math/DegToRad');
+var DistanceBetween = require('../../math/distance/DistanceBetween');
 var Factory = require('./Factory');
 var GetFastValue = require('../../utils/object/GetFastValue');
 var Merge = require('../../utils/object/Merge');
 var PluginManager = require('../../boot/PluginManager');
+var Vector2 = require('../../math/Vector2');
 var World = require('./World');
-var DistanceBetween = require('../../math/distance/DistanceBetween');
-var DegToRad = require('../../math/DegToRad');
 
 //  All methods in this class are available under `this.physics` in a Scene.
 
@@ -142,11 +143,11 @@ var ArcadePhysics = new Class({
      * @method Phaser.Physics.Arcade.ArcadePhysics#overlap
      * @since 3.0.0
      *
-     * @param {Phaser.GameObjects.GameObject|array} object1 - The first object or array of objects to check. Can be any Game Object that has an Arcade Physics Body.
-     * @param {Phaser.GameObjects.GameObject|array} object2 - The second object or array of objects to check. Can be any Game Object that has an Arcade Physics Body.
-     * @param {function} [overlapCallback=null] - An optional callback function that is called if the objects overlap. The two objects will be passed to this function in the same order in which you specified them, unless you are checking Group vs. Sprite, in which case Sprite will always be the first parameter.
-     * @param {function} [processCallback=null] - A callback function that lets you perform additional checks against the two objects if they overlap. If this is set then `overlapCallback` will only be called if this callback returns `true`.
-     * @param {object} [callbackContext] - The context in which to run the callbacks.
+     * @param {(Phaser.GameObjects.GameObject|array)} object1 - The first object or array of objects to check. Can be any Game Object that has an Arcade Physics Body.
+     * @param {(Phaser.GameObjects.GameObject|array)} object2 - The second object or array of objects to check. Can be any Game Object that has an Arcade Physics Body.
+     * @param {ArcadePhysicsCallback} [overlapCallback=null] - An optional callback function that is called if the objects overlap. The two objects will be passed to this function in the same order in which you specified them, unless you are checking Group vs. Sprite, in which case Sprite will always be the first parameter.
+     * @param {ArcadePhysicsCallback} [processCallback=null] - A callback function that lets you perform additional checks against the two objects if they overlap. If this is set then `overlapCallback` will only be called if this callback returns `true`.
+     * @param {*} [callbackContext] - The context in which to run the callbacks.
      *
      * @return {boolean} True if an overlap occurred otherwise false.
      */
@@ -165,11 +166,11 @@ var ArcadePhysics = new Class({
      * @method Phaser.Physics.Arcade.ArcadePhysics#collide
      * @since 3.0.0
      *
-     * @param {Phaser.GameObjects.GameObject|array} object1 - The first object or array of objects to check. Can be any Game Object that has an Arcade Physics Body.
-     * @param {Phaser.GameObjects.GameObject|array} object2 - The second object or array of objects to check. Can be any Game Object that has an Arcade Physics Body.
-     * @param {function} [collideCallback=null] - An optional callback function that is called if the objects collide. The two objects will be passed to this function in the same order in which you specified them, unless you are checking Group vs. Sprite, in which case Sprite will always be the first parameter.
-     * @param {function} [processCallback=null] - A callback function that lets you perform additional checks against the two objects if they collide. If this is set then `collideCallback` will only be called if this callback returns `true`.
-     * @param {object} [callbackContext] - The context in which to run the callbacks.
+     * @param {(Phaser.GameObjects.GameObject|array)} object1 - The first object or array of objects to check. Can be any Game Object that has an Arcade Physics Body.
+     * @param {(Phaser.GameObjects.GameObject|array)} object2 - The second object or array of objects to check. Can be any Game Object that has an Arcade Physics Body.
+     * @param {ArcadePhysicsCallback} [collideCallback=null] - An optional callback function that is called if the objects collide. The two objects will be passed to this function in the same order in which you specified them, unless you are checking Group vs. Sprite, in which case Sprite will always be the first parameter.
+     * @param {ArcadePhysicsCallback} [processCallback=null] - A callback function that lets you perform additional checks against the two objects if they collide. If this is set then `collideCallback` will only be called if this callback returns `true`.
+     * @param {*} [callbackContext] - The context in which to run the callbacks.
      *
      * @return {boolean} True if a collision occurred otherwise false.
      */
@@ -405,13 +406,14 @@ var ArcadePhysics = new Class({
      *
      * @param {number} angle - The angle in degrees calculated in clockwise positive direction (down = 90 degrees positive, right = 0 degrees positive, up = 90 degrees negative)
      * @param {number} [speed=60] - The speed it will move, in pixels per second sq.
-     * @param {Phaser.Math.Vector2} vec2 - The Vector2 in which the x and y properties will be set to the calculated velocity.
+     * @param {Phaser.Math.Vector2} [vec2] - The Vector2 in which the x and y properties will be set to the calculated velocity.
      *
      * @return {Phaser.Math.Vector2} The Vector2 that stores the velocity.
      */
     velocityFromAngle: function (angle, speed, vec2)
     {
         if (speed === undefined) { speed = 60; }
+        if (vec2 === undefined) { vec2 = new Vector2(); }
 
         return vec2.setToPolar(DegToRad(angle), speed);
     },
@@ -425,13 +427,14 @@ var ArcadePhysics = new Class({
      *
      * @param {number} rotation - The angle in radians.
      * @param {number} [speed=60] - The speed it will move, in pixels per second sq.
-     * @param {Phaser.Math.Vector2} vec2 - The Vector2 in which the x and y properties will be set to the calculated velocity.
+     * @param {Phaser.Math.Vector2} [vec2] - The Vector2 in which the x and y properties will be set to the calculated velocity.
      *
      * @return {Phaser.Math.Vector2} The Vector2 that stores the velocity.
      */
     velocityFromRotation: function (rotation, speed, vec2)
     {
         if (speed === undefined) { speed = 60; }
+        if (vec2 === undefined) { vec2 = new Vector2(); }
 
         return vec2.setToPolar(rotation, speed);
     },

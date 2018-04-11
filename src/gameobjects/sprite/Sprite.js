@@ -28,7 +28,6 @@ var SpriteRender = require('./SpriteRender');
  * @since 3.0.0
  *
  * @extends Phaser.GameObjects.Components.Alpha
- * @extends Phaser.GameObjects.Components.Animation
  * @extends Phaser.GameObjects.Components.BlendMode
  * @extends Phaser.GameObjects.Components.Depth
  * @extends Phaser.GameObjects.Components.Flip
@@ -47,7 +46,7 @@ var SpriteRender = require('./SpriteRender');
  * @param {number} x - The horizontal position of this Game Object in the world.
  * @param {number} y - The vertical position of this Game Object in the world.
  * @param {string} texture - The key of the Texture this Game Object will use to render with, as stored in the Texture Manager.
- * @param {string|integer} [frame] - An optional frame from the Texture this Game Object is rendering with.
+ * @param {(string|integer)} [frame] - An optional frame from the Texture this Game Object is rendering with.
  */
 var Sprite = new Class({
 
@@ -114,8 +113,8 @@ var Sprite = new Class({
      * @since 3.0.0
      *
      * @param {string} key - [description]
-     * @param {boolean} ignoreIfPlaying - [description]
-     * @param {integer|string} startFrame - [description]
+     * @param {boolean} [ignoreIfPlaying=false] - [description]
+     * @param {integer} [startFrame=0] - [description]
      *
      * @return {Phaser.GameObjects.Sprite} This Game Object.
      */
@@ -132,7 +131,7 @@ var Sprite = new Class({
      * @method Phaser.GameObjects.Sprite#toJSON
      * @since 3.0.0
      *
-     * @return {object} [description]
+     * @return {JSONGameObject} A JSON representation of the Game Object.
      */
     toJSON: function ()
     {

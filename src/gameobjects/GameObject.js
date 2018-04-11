@@ -17,7 +17,7 @@ var EventEmitter = require('eventemitter3');
  *
  * @class GameObject
  * @memberOf Phaser.GameObjects
- * @extends EventEmitter
+ * @extends Phaser.Events.EventEmitter
  * @constructor
  * @since 3.0.0
  *
@@ -54,6 +54,15 @@ var GameObject = new Class({
          * @since 3.0.0
          */
         this.type = type;
+
+        /**
+         * The parent Container of this Game Object, if it has one.
+         *
+         * @name Phaser.GameObjects.GameObject#parentContainer
+         * @type {Phaser.GameObjects.Container}
+         * @since 3.4.0
+         */
+        this.parentContainer = null;
 
         /**
          * The name of this Game Object.
@@ -139,7 +148,7 @@ var GameObject = new Class({
          * If this Game Object is enabled for physics then this property will contain a reference to a Physics Body.
          *
          * @name Phaser.GameObjects.GameObject#body
-         * @type {?Phaser.Physics.Body}
+         * @type {?object}
          * @default null
          * @since 3.0.0
          */
@@ -186,10 +195,11 @@ var GameObject = new Class({
     },
 
     /**
-     * [description]
+     * Adds a DataManager to this object.
      *
      * @method Phaser.GameObjects.GameObject#setDataEnabled
      * @since 3.0.0
+     * @see Phaser.Data.DataManager
      *
      * @return {Phaser.GameObjects.GameObject} This GameObject.
      */
@@ -211,7 +221,7 @@ var GameObject = new Class({
      * @since 3.0.0
      *
      * @param {string} key - The key of the property to be stored.
-     * @param {any} value - The value to store with the key. Can be a string, number, array or object.
+     * @param {*} value - The value to store with the key. Can be a string, number, array or object.
      *
      * @return {Phaser.GameObjects.GameObject} This GameObject.
      */
@@ -235,7 +245,7 @@ var GameObject = new Class({
      *
      * @param {string} key - The key of the property to be retrieved.
      *
-     * @return {any} The data, if present in the Data Store.
+     * @return {*} The data, if present in the Data Store.
      */
     getData: function (key)
     {
@@ -253,8 +263,8 @@ var GameObject = new Class({
      * @method Phaser.GameObjects.GameObject#setInteractive
      * @since 3.0.0
      *
-     * @param {any} [shape] - A geometric shape that defines the hit area for the Game Object. If not specified a Rectangle will be used.
-     * @param {function} [callback] - A callback to be invoked when the Game Object is interacted with.
+     * @param {*} [shape] - A geometric shape that defines the hit area for the Game Object. If not specified a Rectangle will be used.
+     * @param {HitAreaCallback} [callback] - A callback to be invoked when the Game Object is interacted with.
      * @param {boolean} [dropZone=false] - Should this Game Object be treated as a drop zone target?
      *
      * @return {Phaser.GameObjects.GameObject} This GameObject.
@@ -331,6 +341,8 @@ var GameObject = new Class({
             this.preDestroy.call(this);
         }
 
+        this.emit('destroy', this);
+
         var sys = this.scene.sys;
 
         sys.displayList.remove(this);
@@ -363,7 +375,7 @@ var GameObject = new Class({
 
         this.scene = undefined;
 
-        this.emit('destroy');
+        this.parentContainer = undefined;
 
         this.removeAllListeners();
     }

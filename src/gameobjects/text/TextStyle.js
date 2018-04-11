@@ -11,6 +11,17 @@ var MeasureText = require('./MeasureText');
 
 //  Key: [ Object Key, Default Value ]
 
+/**
+ * A custom function that will be responsible for wrapping the text.
+ * @callback TextStyleWordWrapCallback
+ *
+ * @param {string} text - The string to wrap.
+ * @param {Phaser.GameObjects.Text} textObject - The Text instance.
+ *
+ * @return {(string|string[])} Should return the wrapped lines either as an array of lines or as a string with
+ * newline characters in place to indicate where breaks should happen.
+ */
+
 var propertyMap = {
     fontFamily: [ 'fontFamily', 'Courier' ],
     fontSize: [ 'fontSize', '16px' ],
@@ -459,7 +470,7 @@ var TextStyle = new Class({
      * @method Phaser.GameObjects.Components.TextStyle#setFont
      * @since 3.0.0
      *
-     * @param {string|object} font - [description]
+     * @param {(string|object)} font - [description]
      *
      * @return {Phaser.GameObjects.Text} The parent Text object.
      */
@@ -521,7 +532,7 @@ var TextStyle = new Class({
      * @method Phaser.GameObjects.Components.TextStyle#setFontSize
      * @since 3.0.0
      *
-     * @param {number|string} size - [description]
+     * @param {(number|string)} size - [description]
      *
      * @return {Phaser.GameObjects.Text} The parent Text object.
      */
@@ -820,7 +831,7 @@ var TextStyle = new Class({
      * @method Phaser.GameObjects.Components.TextStyle#setWordWrapCallback
      * @since 3.0.0
      *
-     * @param {function} callback - A custom function that will be responsible for wrapping the
+     * @param {TextStyleWordWrapCallback} callback - A custom function that will be responsible for wrapping the
      * text. It will receive two arguments: text (the string to wrap), textObject (this Text
      * instance). It should return the wrapped lines either as an array of lines or as a string with
      * newline characters in place to indicate where breaks should happen.

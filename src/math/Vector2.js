@@ -4,10 +4,17 @@
  * @license      {@link https://github.com/photonstorm/phaser/blob/master/license.txt|MIT License}
  */
 
-//  Adapted from [gl-matrix](https://github.com/toji/gl-matrix) by toji 
+//  Adapted from [gl-matrix](https://github.com/toji/gl-matrix) by toji
 //  and [vecmath](https://github.com/mattdesl/vecmath) by mattdesl
 
 var Class = require('../utils/Class');
+
+/**
+ * @typedef {object} Vector2Like
+ *
+ * @property {number} x - [description]
+ * @property {number} y - [description]
+ */
 
 /**
  * @classdesc
@@ -35,6 +42,7 @@ var Vector2 = new Class({
          * @default 0
          * @since 3.0.0
          */
+        this.x = 0;
 
         /**
          * The y component of this Vector.
@@ -44,6 +52,7 @@ var Vector2 = new Class({
          * @default 0
          * @since 3.0.0
          */
+        this.y = 0;
 
         if (typeof x === 'object')
         {
@@ -78,7 +87,7 @@ var Vector2 = new Class({
      * @method Phaser.Math.Vector2#copy
      * @since 3.0.0
      *
-     * @param {Phaser.Math.Vector2|object} src - [description]
+     * @param {Phaser.Math.Vector2} src - [description]
      *
      * @return {Phaser.Math.Vector2} This Vector2.
      */
@@ -96,7 +105,7 @@ var Vector2 = new Class({
      * @method Phaser.Math.Vector2#setFromObject
      * @since 3.0.0
      *
-     * @param {object} obj - [description]
+     * @param {Vector2Like} obj - [description]
      *
      * @return {Phaser.Math.Vector2} This Vector2.
      */
@@ -127,6 +136,22 @@ var Vector2 = new Class({
         this.y = y;
 
         return this;
+    },
+
+    /**
+     * This method is an alias for `Vector2.set`.
+     *
+     * @method Phaser.Math.Vector2#setTo
+     * @since 3.4.0
+     *
+     * @param {number} x - [description]
+     * @param {number} [y=x] - [description]
+     *
+     * @return {Phaser.Math.Vector2} This Vector2.
+     */
+    setTo: function (x, y)
+    {
+        return this.set(x, y);
     },
 
     /**
@@ -389,7 +414,7 @@ var Vector2 = new Class({
             this.x = x * len;
             this.y = y * len;
         }
-    
+
         return this;
     },
 

@@ -125,10 +125,12 @@ var Triangle = new Class({
      * @method Phaser.Geom.Triangle#getPoint
      * @since 3.0.0
      *
-     * @param {float} position - [description]
-     * @param {Phaser.Geom.Point|object} output - [description]
+     * @generic {Phaser.Geom.Point} O - [output,$return]
      *
-     * @return {Phaser.Geom.Point|object} [description]
+     * @param {float} position - [description]
+     * @param {(Phaser.Geom.Point|object)} [output] - [description]
+     *
+     * @return {(Phaser.Geom.Point|object)} [description]
      */
     getPoint: function (position, output)
     {
@@ -141,11 +143,13 @@ var Triangle = new Class({
      * @method Phaser.Geom.Triangle#getPoints
      * @since 3.0.0
      *
+     * @generic {Phaser.Geom.Point[]} O - [output,$return]
+     *
      * @param {integer} quantity - [description]
      * @param {number} [stepRate] - [description]
-     * @param {array|Phaser.Geom.Point[]} [output] - [description]
+     * @param {(array|Phaser.Geom.Point[])} [output] - [description]
      *
-     * @return {array|Phaser.Geom.Point[]} [description]
+     * @return {(array|Phaser.Geom.Point[])} [description]
      */
     getPoints: function (quantity, stepRate, output)
     {
@@ -158,7 +162,9 @@ var Triangle = new Class({
      * @method Phaser.Geom.Triangle#getRandomPoint
      * @since 3.0.0
      *
-     * @param {Phaser.Geom.Point} point - [description]
+     * @generic {Phaser.Geom.Point} O - [point,$return]
+     *
+     * @param {Phaser.Geom.Point} [point] - [description]
      *
      * @return {Phaser.Geom.Point} [description]
      */
@@ -209,6 +215,8 @@ var Triangle = new Class({
      * @method Phaser.Geom.Triangle#getLineA
      * @since 3.0.0
      *
+     * @generic {Phaser.Geom.Line} O - [line,$return]
+     *
      * @param {Phaser.Geom.Line} [line] - A Line object to set the results in. If `undefined` a new Line will be created.
      *
      * @return {Phaser.Geom.Line} A Line object that corresponds to line A of this Triangle.
@@ -228,6 +236,8 @@ var Triangle = new Class({
      * @method Phaser.Geom.Triangle#getLineB
      * @since 3.0.0
      *
+     * @generic {Phaser.Geom.Line} O - [line,$return]
+     *
      * @param {Phaser.Geom.Line} [line] - A Line object to set the results in. If `undefined` a new Line will be created.
      *
      * @return {Phaser.Geom.Line} A Line object that corresponds to line B of this Triangle.
@@ -246,6 +256,8 @@ var Triangle = new Class({
      *
      * @method Phaser.Geom.Triangle#getLineC
      * @since 3.0.0
+     *
+     * @generic {Phaser.Geom.Line} O - [line,$return]
      *
      * @param {Phaser.Geom.Line} [line] - A Line object to set the results in. If `undefined` a new Line will be created.
      *

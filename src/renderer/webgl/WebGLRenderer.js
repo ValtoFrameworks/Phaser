@@ -1,5 +1,6 @@
 /**
  * @author       Richard Davey <rich@photonstorm.com>
+ * @author       Felipe Alfonso <@bitnenfer>
  * @copyright    2018 Photon Storm Ltd.
  * @license      {@link https://github.com/photonstorm/phaser/blob/master/license.txt|MIT License}
  */
@@ -15,6 +16,20 @@ var BitmapMaskPipeline = require('./pipelines/BitmapMaskPipeline');
 var FlatTintPipeline = require('./pipelines/FlatTintPipeline');
 var ForwardDiffuseLightPipeline = require('./pipelines/ForwardDiffuseLightPipeline');
 var TextureTintPipeline = require('./pipelines/TextureTintPipeline');
+
+/**
+ * @callback WebGLContextCallback
+ *
+ * @param {Phaser.Renderer.WebGL.WebGLRenderer} renderer - [description]
+ */
+
+/**
+ * @typedef {object} SnapshotState
+ *
+ * @property {SnapshotCallback} callback - [description]
+ * @property {string} type - [description]
+ * @property {float} encoder - [description]
+ */
 
 /**
  * @classdesc
@@ -53,7 +68,7 @@ var WebGLRenderer = new Class({
          * [description]
          *
          * @name Phaser.Renderer.WebGL.WebGLRenderer#config
-         * @type {object}
+         * @type {RendererConfig}
          * @since 3.0.0
          */
         this.config = {
@@ -115,7 +130,7 @@ var WebGLRenderer = new Class({
          * [description]
          *
          * @name Phaser.Renderer.WebGL.WebGLRenderer#lostContextCallbacks
-         * @type {function[]}
+         * @type {WebGLContextCallback[]}
          * @since 3.0.0
          */
         this.lostContextCallbacks = [];
@@ -124,7 +139,7 @@ var WebGLRenderer = new Class({
          * [description]
          *
          * @name Phaser.Renderer.WebGL.WebGLRenderer#restoredContextCallbacks
-         * @type {function[]}
+         * @type {WebGLContextCallback[]}
          * @since 3.0.0
          */
         this.restoredContextCallbacks = [];
@@ -173,7 +188,7 @@ var WebGLRenderer = new Class({
          * [description]
          *
          * @name Phaser.Renderer.WebGL.WebGLRenderer#snapshotState
-         * @type {object}
+         * @type {SnapshotState}
          * @since 3.0.0
          */
         this.snapshotState = {
@@ -384,7 +399,7 @@ var WebGLRenderer = new Class({
         var canvas = this.canvas;
         var clearColor = config.backgroundColor;
         var gl = canvas.getContext('webgl', config.contextCreation) || canvas.getContext('experimental-webgl', config.contextCreation);
-    
+
         if (!gl)
         {
             this.contextLost = true;
@@ -431,10 +446,10 @@ var WebGLRenderer = new Class({
         this.addPipeline('FlatTintPipeline', new FlatTintPipeline({ game: this.game, renderer: this }));
         this.addPipeline('BitmapMaskPipeline', new BitmapMaskPipeline({ game: this.game, renderer: this }));
         this.addPipeline('Light2D', new ForwardDiffuseLightPipeline({ game: this.game, renderer: this }));
-        
+
         this.setBlendMode(CONST.BlendModes.NORMAL);
         this.resize(this.width, this.height);
-    
+
         return this;
     },
 
@@ -457,7 +472,7 @@ var WebGLRenderer = new Class({
 
         this.width = Math.floor(width * resolution);
         this.height = Math.floor(height * resolution);
-        
+
         this.canvas.width = this.width;
         this.canvas.height = this.height;
 
@@ -474,6 +489,8 @@ var WebGLRenderer = new Class({
         {
             pipelines[pipelineName].resize(width, height, resolution);
         }
+                
+        this.currentScissor.set([ 0, 0, this.width, this.height ]);
 
         return this;
     },
@@ -484,7 +501,7 @@ var WebGLRenderer = new Class({
      * @method Phaser.Renderer.WebGL.WebGLRenderer#onContextRestored
      * @since 3.0.0
      *
-     * @param {function} callback - [description]
+     * @param {WebGLContextCallback} callback - [description]
      * @param {object} target - [description]
      *
      * @return {Phaser.Renderer.WebGL.WebGLRenderer} [description]
@@ -502,7 +519,7 @@ var WebGLRenderer = new Class({
      * @method Phaser.Renderer.WebGL.WebGLRenderer#onContextLost
      * @since 3.0.0
      *
-     * @param {function} callback - [description]
+     * @param {WebGLContextCallback} callback - [description]
      * @param {object} target - [description]
      *
      * @return {Phaser.Renderer.WebGL.WebGLRenderer} [description]
@@ -713,7 +730,7 @@ var WebGLRenderer = new Class({
         scissorStack[stackIndex + 1] = currentScissor[1];
         scissorStack[stackIndex + 2] = currentScissor[2];
         scissorStack[stackIndex + 3] = currentScissor[3];
-        
+
         this.currentScissorIdx += 4;
         this.setScissor(x, y, w, h);
 
@@ -732,7 +749,7 @@ var WebGLRenderer = new Class({
     {
         var scissorStack = this.scissorStack;
         var stackIndex = this.currentScissorIdx - 4;
-        
+
         var x = scissorStack[stackIndex + 0];
         var y = scissorStack[stackIndex + 1];
         var w = scissorStack[stackIndex + 2];
@@ -740,7 +757,7 @@ var WebGLRenderer = new Class({
 
         this.currentScissorIdx = stackIndex;
         this.setScissor(x, y, w, h);
-        
+
         return this;
     },
 
@@ -1002,7 +1019,7 @@ var WebGLRenderer = new Class({
         if (indexBuffer !== this.currentIndexBuffer)
         {
             this.flush();
-            
+
             gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
 
             this.currentIndexBuffer = indexBuffer;
@@ -1089,7 +1106,7 @@ var WebGLRenderer = new Class({
         pma = (pma === undefined || pma === null) ? true : pma;
 
         this.setTexture2D(texture, 0);
-        
+
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, minFilter);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, magFilter);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, wrapS);
@@ -1356,7 +1373,7 @@ var WebGLRenderer = new Class({
         var ch = Math.floor(camera.height * resolution);
 
         this.pushScissor(cx, cy, cw, ch);
-        
+
         if (camera.backgroundColor.alphaGL > 0)
         {
             var color = camera.backgroundColor;
@@ -1533,7 +1550,7 @@ var WebGLRenderer = new Class({
      * @method Phaser.Renderer.WebGL.WebGLRenderer#snapshot
      * @since 3.0.0
      *
-     * @param {function} callback - [description]
+     * @param {SnapshotCallback} callback - [description]
      * @param {string} type - [description]
      * @param {float} encoderOptions - [description]
      *
@@ -1894,7 +1911,7 @@ var WebGLRenderer = new Class({
         {
             this.getExtension('WEBGL_lose_context').loseContext();
         }
-        
+
         delete this.gl;
         delete this.game;
 

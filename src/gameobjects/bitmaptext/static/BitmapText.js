@@ -15,16 +15,25 @@ var Render = require('./BitmapTextRender');
 /**
  * @typedef {object} TextBounds
  *
- * @param {object} local - [description]
- * @param {number} local.x - [description]
- * @param {number} local.y - [description]
- * @param {number} local.width - [description]
- * @param {number} local.height - [description]
- * @param {object} global - [description]
- * @param {number} global.x - [description]
- * @param {number} global.y - [description]
- * @param {number} global.width - [description]
- * @param {number} global.height - [description]
+ * @property {object} local - [description]
+ * @property {number} local.x - [description]
+ * @property {number} local.y - [description]
+ * @property {number} local.width - [description]
+ * @property {number} local.height - [description]
+ * @property {object} global - [description]
+ * @property {number} global.x - [description]
+ * @property {number} global.y - [description]
+ * @property {number} global.width - [description]
+ * @property {number} global.height - [description]
+ */
+
+/**
+ * @typedef {object} JSONBitmapText
+ *
+ * @property {string} font - [description]
+ * @property {string} text - [description]
+ * @property {number} fontSize - [description]
+ * @property {number} letterSpacing - Adds/Removes spacing between characters
  */
 
 /**
@@ -43,17 +52,17 @@ var Render = require('./BitmapTextRender');
  * @extends Phaser.GameObjects.Components.Origin
  * @extends Phaser.GameObjects.Components.Pipeline
  * @extends Phaser.GameObjects.Components.ScaleMode
+ * @extends Phaser.GameObjects.Components.ScrollFactor
  * @extends Phaser.GameObjects.Components.Texture
  * @extends Phaser.GameObjects.Components.Tint
  * @extends Phaser.GameObjects.Components.Transform
  * @extends Phaser.GameObjects.Components.Visible
- * @extends Phaser.GameObjects.Components.ScrollFactor
- *
+ * 
  * @param {Phaser.Scene} scene - The Scene to which this Game Object belongs. It can only belong to one Scene at any given time.
- * @param {number} [x=0] - The x coordinate of this Game Object in world space.
- * @param {number} [y=0] - The y coordinate of this Game Object in world space.
+ * @param {number} x - The x coordinate of this Game Object in world space.
+ * @param {number} y - The y coordinate of this Game Object in world space.
  * @param {string} font - [description]
- * @param {string|string[]} [text] - [description]
+ * @param {(string|string[])} [text] - [description]
  * @param {number} [size] - [description]
  */
 var BitmapText = new Class({
@@ -67,11 +76,11 @@ var BitmapText = new Class({
         Components.Origin,
         Components.Pipeline,
         Components.ScaleMode,
+        Components.ScrollFactor,
         Components.Texture,
         Components.Tint,
         Components.Transform,
         Components.Visible,
-        Components.ScrollFactor,
         Render
     ],
 
@@ -121,6 +130,16 @@ var BitmapText = new Class({
          */
         this.fontSize = size || this.fontData.size;
 
+        /**
+         * Adds/Removes spacing between characters
+         * Can be a negative or positive number
+         *
+         * @name Phaser.GameObjects.BitmapText#letterSpacing
+         * @type {number}
+         * @since 3.4.0
+         */
+        this.letterSpacing = 0;
+
         this.setTexture(entry.texture, entry.frame);
         this.setPosition(x, y);
         this.setOrigin(0, 0);
@@ -130,7 +149,7 @@ var BitmapText = new Class({
          * [description]
          *
          * @name Phaser.GameObjects.BitmapText#_bounds
-         * @type {object}
+         * @type {TextBounds}
          * @private
          * @since 3.0.0
          */
@@ -155,12 +174,33 @@ var BitmapText = new Class({
     },
 
     /**
+     * Sets the letter spacing between each character of this Bitmap Text.
+     * Can be a positive value to increase the space, or negative to reduce it.
+     * Spacing is applied after the kerning values have been set.
+     *
+     * @method Phaser.GameObjects.BitmapText#setLetterSpacing
+     * @since 3.4.0
+     *
+     * @param {number} [spacing=0] - The amount of horizontal space to add between each character.
+     *
+     * @return {Phaser.GameObjects.BitmapText} This Game Object.
+     */
+    setLetterSpacing: function (spacing)
+    {
+        if (spacing === undefined) { spacing = 0; }
+
+        this.letterSpacing = spacing;
+
+        return this;
+    },
+
+    /**
      * [description]
      *
      * @method Phaser.GameObjects.BitmapText#setText
      * @since 3.0.0
      *
-     * @param {string|string[]} value - The string, or array of strings, to be set as the content of this BitmapText.
+     * @param {(string|string[])} value - The string, or array of strings, to be set as the content of this BitmapText.
      *
      * @return {Phaser.GameObjects.BitmapText} This Game Object.
      */
@@ -248,7 +288,7 @@ var BitmapText = new Class({
      * @method Phaser.GameObjects.BitmapText#toJSON
      * @since 3.0.0
      *
-     * @return {JSONGameObject} [description]
+     * @return {JSONGameObject.<JSONBitmapText>} [description]
      */
     toJSON: function ()
     {
@@ -259,7 +299,8 @@ var BitmapText = new Class({
         var data = {
             font: this.font,
             text: this.text,
-            fontSize: this.fontSize
+            fontSize: this.fontSize,
+            letterSpacing: this.letterSpacing
         };
 
         out.data = data;

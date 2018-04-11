@@ -11,7 +11,7 @@ var DistanceBetween = require('../math/distance/DistanceBetween');
 var Ellipse = require('../geom/ellipse/Ellipse');
 var EllipseContains = require('../geom/ellipse/Contains');
 var EventEmitter = require('eventemitter3');
-var InteractiveObject = require('./InteractiveObject');
+var CreateInteractiveObject = require('./CreateInteractiveObject');
 var PluginManager = require('../boot/PluginManager');
 var Rectangle = require('../geom/rectangle/Rectangle');
 var RectangleContains = require('../geom/rectangle/Contains');
@@ -23,7 +23,7 @@ var TriangleContains = require('../geom/triangle/Contains');
  * [description]
  *
  * @class InputPlugin
- * @extends EventEmitter
+ * @extends Phaser.Events.EventEmitter
  * @memberOf Phaser.Input
  * @constructor
  * @since 3.0.0
@@ -402,7 +402,7 @@ var InputPlugin = new Class({
      *
      * @param {Phaser.GameObjects.GameObject} gameObject - [description]
      * @param {object} shape - [description]
-     * @param {function} callback - [description]
+     * @param {HitAreaCallback} callback - [description]
      * @param {boolean} [dropZone=false] - [description]
      *
      * @return {Phaser.Input.InputPlugin} This Input Plugin.
@@ -764,6 +764,7 @@ var InputPlugin = new Class({
             }
 
             pointer.dragState = 0;
+            list.splice(0);
         }
 
         return 0;
@@ -959,6 +960,8 @@ var InputPlugin = new Class({
                 continue;
             }
 
+            //  pointerupoutside
+
             gameObject.emit('pointerup', pointer, gameObject.input.localX, gameObject.input.localY);
 
             this.emit('gameobjectup', pointer, gameObject);
@@ -1010,7 +1013,7 @@ var InputPlugin = new Class({
      * @method Phaser.Input.InputPlugin#setDraggable
      * @since 3.0.0
      *
-     * @param {Phaser.GameObjects.GameObject|Phaser.GameObjects.GameObject[]} gameObjects - An array of Game Objects to change the draggable state on.
+     * @param {(Phaser.GameObjects.GameObject|Phaser.GameObjects.GameObject[])} gameObjects - An array of Game Objects to change the draggable state on.
      * @param {boolean} [value=true] - Set to `true` if the Game Objects should be made draggable, `false` if they should be unset.
      *
      * @return {Phaser.Input.InputPlugin} This InputPlugin object.
@@ -1051,9 +1054,9 @@ var InputPlugin = new Class({
      * @method Phaser.Input.InputPlugin#setHitArea
      * @since 3.0.0
      *
-     * @param {Phaser.GameObjects.GameObject|Phaser.GameObjects.GameObject[]} gameObjects - An array of Game Objects to set the hit area on.
+     * @param {(Phaser.GameObjects.GameObject|Phaser.GameObjects.GameObject[])} gameObjects - An array of Game Objects to set the hit area on.
      * @param {object} [shape] - The shape or object to check if the pointer is within for hit area checks.
-     * @param {function} [callback] - The 'contains' function to invoke to check if the pointer is within the hit area.
+     * @param {HitAreaCallback} [callback] - The 'contains' function to invoke to check if the pointer is within the hit area.
      *
      * @return {Phaser.Input.InputPlugin} This InputPlugin object.
      */
@@ -1073,7 +1076,7 @@ var InputPlugin = new Class({
         {
             var gameObject = gameObjects[i];
 
-            gameObject.input = InteractiveObject(gameObject, shape, callback);
+            gameObject.input = CreateInteractiveObject(gameObject, shape, callback);
 
             this.queueForInsertion(gameObject);
         }
@@ -1087,11 +1090,11 @@ var InputPlugin = new Class({
      * @method Phaser.Input.InputPlugin#setHitAreaCircle
      * @since 3.0.0
      *
-     * @param {Phaser.GameObjects.GameObject|Phaser.GameObjects.GameObject[]} gameObjects - An array of Game Objects to set as having a circle hit area.
+     * @param {(Phaser.GameObjects.GameObject|Phaser.GameObjects.GameObject[])} gameObjects - An array of Game Objects to set as having a circle hit area.
      * @param {number} x - The center of the circle.
      * @param {number} y - The center of the circle.
      * @param {number} radius - The radius of the circle.
-     * @param {function} [callback] - The hit area callback. If undefined it uses Circle.Contains.
+     * @param {HitAreaCallback} [callback] - The hit area callback. If undefined it uses Circle.Contains.
      *
      * @return {Phaser.Input.InputPlugin} This InputPlugin object.
      */
@@ -1110,12 +1113,12 @@ var InputPlugin = new Class({
      * @method Phaser.Input.InputPlugin#setHitAreaEllipse
      * @since 3.0.0
      *
-     * @param {Phaser.GameObjects.GameObject|Phaser.GameObjects.GameObject[]} gameObjects - An array of Game Objects to set as having an ellipse hit area.
+     * @param {(Phaser.GameObjects.GameObject|Phaser.GameObjects.GameObject[])} gameObjects - An array of Game Objects to set as having an ellipse hit area.
      * @param {number} x - The center of the ellipse.
      * @param {number} y - The center of the ellipse.
      * @param {number} width - The width of the ellipse.
      * @param {number} height - The height of the ellipse.
-     * @param {function} [callback] - The hit area callback. If undefined it uses Ellipse.Contains.
+     * @param {HitAreaCallback} [callback] - The hit area callback. If undefined it uses Ellipse.Contains.
      *
      * @return {Phaser.Input.InputPlugin} This InputPlugin object.
      */
@@ -1134,8 +1137,8 @@ var InputPlugin = new Class({
      * @method Phaser.Input.InputPlugin#setHitAreaFromTexture
      * @since 3.0.0
      *
-     * @param {Phaser.GameObjects.GameObject|Phaser.GameObjects.GameObject[]} gameObjects - An array of Game Objects to set as having an ellipse hit area.
-     * @param {function} [callback] - The hit area callback. If undefined it uses Rectangle.Contains.
+     * @param {(Phaser.GameObjects.GameObject|Phaser.GameObjects.GameObject[])} gameObjects - An array of Game Objects to set as having an ellipse hit area.
+     * @param {HitAreaCallback} [callback] - The hit area callback. If undefined it uses Rectangle.Contains.
      *
      * @return {Phaser.Input.InputPlugin} This InputPlugin object.
      */
@@ -1169,7 +1172,7 @@ var InputPlugin = new Class({
 
             if (width !== 0 && height !== 0)
             {
-                gameObject.input = InteractiveObject(gameObject, new Rectangle(0, 0, width, height), callback);
+                gameObject.input = CreateInteractiveObject(gameObject, new Rectangle(0, 0, width, height), callback);
 
                 this.queueForInsertion(gameObject);
             }
@@ -1184,12 +1187,12 @@ var InputPlugin = new Class({
      * @method Phaser.Input.InputPlugin#setHitAreaRectangle
      * @since 3.0.0
      *
-     * @param {Phaser.GameObjects.GameObject|Phaser.GameObjects.GameObject[]} gameObjects - An array of Game Objects to set as having a rectangular hit area.
+     * @param {(Phaser.GameObjects.GameObject|Phaser.GameObjects.GameObject[])} gameObjects - An array of Game Objects to set as having a rectangular hit area.
      * @param {number} x - The top-left of the rectangle.
      * @param {number} y - The top-left of the rectangle.
      * @param {number} width - The width of the rectangle.
      * @param {number} height - The height of the rectangle.
-     * @param {function} [callback] - The hit area callback. If undefined it uses Rectangle.Contains.
+     * @param {HitAreaCallback} [callback] - The hit area callback. If undefined it uses Rectangle.Contains.
      *
      * @return {Phaser.Input.InputPlugin} This InputPlugin object.
      */
@@ -1208,14 +1211,14 @@ var InputPlugin = new Class({
      * @method Phaser.Input.InputPlugin#setHitAreaTriangle
      * @since 3.0.0
      *
-     * @param {Phaser.GameObjects.GameObject|Phaser.GameObjects.GameObject[]} gameObjects - An array of Game Objects to set as having a  triangular hit area.
+     * @param {(Phaser.GameObjects.GameObject|Phaser.GameObjects.GameObject[])} gameObjects - An array of Game Objects to set as having a  triangular hit area.
      * @param {number} x1 - The x coordinate of the first point of the triangle.
      * @param {number} y1 - The y coordinate of the first point of the triangle.
      * @param {number} x2 - The x coordinate of the second point of the triangle.
      * @param {number} y2 - The y coordinate of the second point of the triangle.
      * @param {number} x3 - The x coordinate of the third point of the triangle.
      * @param {number} y3 - The y coordinate of the third point of the triangle.
-     * @param {function} [callback] - The hit area callback. If undefined it uses Triangle.Contains.
+     * @param {HitAreaCallback} [callback] - The hit area callback. If undefined it uses Triangle.Contains.
      *
      * @return {Phaser.Input.InputPlugin} This InputPlugin object.
      */

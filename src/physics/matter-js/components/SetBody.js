@@ -92,7 +92,7 @@ var SetBody = {
      * @method Phaser.Physics.Matter.Components.SetBody#setExistingBody
      * @since 3.0.0
      *
-     * @param {Phaser.Physics.Matter.Body} body - [description]
+     * @param {MatterJS.Body} body - [description]
      * @param {boolean} [addToWorld=true] - [description]
      *
      * @return {Phaser.GameObjects.GameObject} This Game Object.
@@ -124,6 +124,8 @@ var SetBody = {
         {
             this.world.add(this.body);
         }
+
+        this.setOrigin(body.render.sprite.xOffset, body.render.sprite.yOffset);
 
         return this;
     },

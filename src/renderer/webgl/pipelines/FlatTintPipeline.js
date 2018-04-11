@@ -1,5 +1,6 @@
 /**
  * @author       Richard Davey <rich@photonstorm.com>
+ * @author       Felipe Alfonso <@bitnenfer>
  * @copyright    2018 Photon Storm Ltd.
  * @license      {@link https://github.com/photonstorm/phaser/blob/master/license.txt|MIT License}
  */
@@ -698,10 +699,18 @@ var FlatTintPipeline = new Class({
      *
      * @param {Phaser.GameObjects.Graphics} graphics - [description]
      * @param {Phaser.Cameras.Scene2D.Camera} camera - [description]
+     * @param {Phaser.GameObjects.Components.TransformMatrix} parentTransformMatrix - [description]
      */
-    batchGraphics: function (graphics, camera)
+    batchGraphics: function (graphics, camera, parentTransformMatrix)
     {
         if (graphics.commandBuffer.length <= 0) { return; }
+
+        var parentMatrix = null;
+
+        if (parentTransformMatrix)
+        {
+            parentMatrix = parentTransformMatrix.matrix;
+        }
         
         this.renderer.setPipeline(this);
 
@@ -713,6 +722,7 @@ var FlatTintPipeline = new Class({
         var srcScaleY = graphics.scaleY;
         var srcRotation = -graphics.rotation;
         var commands = graphics.commandBuffer;
+        var alpha = graphics.alpha;
         var lineAlpha = 1.0;
         var fillAlpha = 1.0;
         var lineColor = 0;
@@ -749,12 +759,38 @@ var FlatTintPipeline = new Class({
         var cmd = cameraMatrix[3];
         var cme = cameraMatrix[4];
         var cmf = cameraMatrix[5];
-        var mva = sra * cma + srb * cmc;
-        var mvb = sra * cmb + srb * cmd;
-        var mvc = src * cma + srd * cmc;
-        var mvd = src * cmb + srd * cmd;
-        var mve = sre * cma + srf * cmc + cme;
-        var mvf = sre * cmb + srf * cmd + cmf;
+        var mva, mvb, mvc, mvd, mve, mvf;
+
+        if (parentMatrix)
+        {
+            var pma = parentMatrix[0];
+            var pmb = parentMatrix[1];
+            var pmc = parentMatrix[2];
+            var pmd = parentMatrix[3];
+            var pme = parentMatrix[4];
+            var pmf = parentMatrix[5];
+            var pca = cma * pma + cmb * pmc;
+            var pcb = cma * pmb + cmb * pmd;
+            var pcc = cmc * pma + cmd * pmc;
+            var pcd = cmc * pmb + cmd * pmd;
+            var pce = cme * pma + cmf * pmc + pme;
+            var pcf = cme * pmb + cmf * pmd + pmf;
+            mva = sra * pca + srb * pcc;
+            mvb = sra * pcb + srb * pcd;
+            mvc = src * pca + srd * pcc;
+            mvd = src * pcb + srd * pcd;
+            mve = sre * pca + srf * pcc + pce;
+            mvf = sre * pcb + srf * pcd + pcf;
+        }
+        else
+        {
+            mva = sra * cma + srb * cmc;
+            mvb = sra * cmb + srb * cmd;
+            mvc = src * cma + srd * cmc;
+            mvd = src * cmb + srd * cmd;
+            mve = sre * cma + srf * cmc + cme;
+            mvf = sre * cmb + srf * cmd + cmf;
+        }
 
         var pathArrayIndex;
         var pathArrayLength;
@@ -778,12 +814,13 @@ var FlatTintPipeline = new Class({
 
                     if (lastPath === null)
                     {
-                        lastPath = new Path(x + cos(startAngle) * radius, y + sin(startAngle) * radius, lineWidth, lineColor, lineAlpha);
+                        lastPath = new Path(x + cos(startAngle) * radius, y + sin(startAngle) * radius, lineWidth, lineColor, lineAlpha * alpha);
                         pathArray.push(lastPath);
                         iteration += iterStep;
                     }
 
                     endAngle -= startAngle;
+
                     if (anticlockwise)
                     {
                         if (endAngle < -PI2)
@@ -810,7 +847,7 @@ var FlatTintPipeline = new Class({
                         tx = x + cos(ta) * radius;
                         ty = y + sin(ta) * radius;
 
-                        lastPath.points.push(new Point(tx, ty, lineWidth, lineColor, lineAlpha));
+                        lastPath.points.push(new Point(tx, ty, lineWidth, lineColor, lineAlpha * alpha));
 
                         iteration += iterStep;
                     }
@@ -819,7 +856,7 @@ var FlatTintPipeline = new Class({
                     tx = x + cos(ta) * radius;
                     ty = y + sin(ta) * radius;
 
-                    lastPath.points.push(new Point(tx, ty, lineWidth, lineColor, lineAlpha));
+                    lastPath.points.push(new Point(tx, ty, lineWidth, lineColor, lineAlpha * alpha));
 
                     cmdIndex += 6;
                     break;
@@ -862,7 +899,7 @@ var FlatTintPipeline = new Class({
                             /* Rectangle properties */ 
                             pathArray[pathArrayIndex].points,
                             fillColor,
-                            fillAlpha,
+                            fillAlpha * alpha,
 
                             /* Transform */
                             mva, mvb, mvc, mvd, mve, mvf,
@@ -886,7 +923,7 @@ var FlatTintPipeline = new Class({
                             path.points,
                             lineWidth,
                             lineColor,
-                            lineAlpha,
+                            lineAlpha * alpha,
 
                             /* Transform */
                             mva, mvb, mvc, mvd, mve, mvf,
@@ -908,7 +945,7 @@ var FlatTintPipeline = new Class({
                         commands[cmdIndex + 3],
                         commands[cmdIndex + 4],
                         fillColor,
-                        fillAlpha,
+                        fillAlpha * alpha,
 
                         /* Transform */
                         mva, mvb, mvc, mvd, mve, mvf,
@@ -932,7 +969,7 @@ var FlatTintPipeline = new Class({
                         commands[cmdIndex + 5],
                         commands[cmdIndex + 6],
                         fillColor,
-                        fillAlpha,
+                        fillAlpha * alpha,
 
                         /* Transform */
                         mva, mvb, mvc, mvd, mve, mvf,
@@ -957,7 +994,7 @@ var FlatTintPipeline = new Class({
                         commands[cmdIndex + 6],
                         lineWidth,
                         lineColor,
-                        lineAlpha,
+                        lineAlpha * alpha,
 
                         /* Transform */
                         mva, mvb, mvc, mvd, mve, mvf,
@@ -970,18 +1007,18 @@ var FlatTintPipeline = new Class({
                 case Commands.LINE_TO:
                     if (lastPath !== null)
                     {
-                        lastPath.points.push(new Point(commands[cmdIndex + 1], commands[cmdIndex + 2], lineWidth, lineColor, lineAlpha));
+                        lastPath.points.push(new Point(commands[cmdIndex + 1], commands[cmdIndex + 2], lineWidth, lineColor, lineAlpha * alpha));
                     }
                     else
                     {
-                        lastPath = new Path(commands[cmdIndex + 1], commands[cmdIndex + 2], lineWidth, lineColor, lineAlpha);
+                        lastPath = new Path(commands[cmdIndex + 1], commands[cmdIndex + 2], lineWidth, lineColor, lineAlpha * alpha);
                         pathArray.push(lastPath);
                     }
                     cmdIndex += 2;
                     break;
 
                 case Commands.MOVE_TO:
-                    lastPath = new Path(commands[cmdIndex + 1], commands[cmdIndex + 2], lineWidth, lineColor, lineAlpha);
+                    lastPath = new Path(commands[cmdIndex + 1], commands[cmdIndex + 2], lineWidth, lineColor, lineAlpha * alpha);
                     pathArray.push(lastPath);
                     cmdIndex += 2;
                     break;
@@ -994,7 +1031,7 @@ var FlatTintPipeline = new Class({
                             commands[cmdIndex + 2],
                             commands[cmdIndex + 3],
                             commands[cmdIndex + 4],
-                            commands[cmdIndex + 5]
+                            commands[cmdIndex + 5] * alpha
                         ));
                     }
                     else
@@ -1004,7 +1041,7 @@ var FlatTintPipeline = new Class({
                             commands[cmdIndex + 2],
                             commands[cmdIndex + 3],
                             commands[cmdIndex + 4],
-                            commands[cmdIndex + 5]
+                            commands[cmdIndex + 5] * alpha
                         );
                         pathArray.push(lastPath);
                     }
@@ -1017,7 +1054,7 @@ var FlatTintPipeline = new Class({
                         commands[cmdIndex + 2],
                         commands[cmdIndex + 3],
                         commands[cmdIndex + 4],
-                        commands[cmdIndex + 5]
+                        commands[cmdIndex + 5] * alpha
                     );
                     pathArray.push(lastPath);
                     cmdIndex += 5;
@@ -1105,7 +1142,7 @@ var FlatTintPipeline = new Class({
      * @method Phaser.Renderer.WebGL.FlatTintPipeline#drawEmitterManager
      * @since 3.0.0
      *
-     * @param {Phaser.GameObjects.Particles.ParticleEmittermanager} emitterManager - [description]
+     * @param {Phaser.GameObjects.Particles.ParticleEmitterManager} emitterManager - [description]
      * @param {Phaser.Cameras.Scene2D.Camera} camera - [description]
      */
     drawEmitterManager: function ()

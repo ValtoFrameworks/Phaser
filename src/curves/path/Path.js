@@ -235,7 +235,7 @@ var Path = new Class({
      * @method Phaser.Curves.Path#quadraticBezierTo
      * @since 3.2.0
      *
-     * @param {number|Phaser.Math.Vector2[]} x - [description]
+     * @param {(number|Phaser.Math.Vector2[])} x - [description]
      * @param {number} [y] - [description]
      * @param {number} [controlX] - [description]
      * @param {number} [controlY] - [description]
@@ -268,6 +268,8 @@ var Path = new Class({
      *
      * @method Phaser.Curves.Path#draw
      * @since 3.0.0
+     *
+     * @generic {Phaser.GameObjects.Graphics} G - [out,$return]
      *
      * @param {Phaser.GameObjects.Graphics} graphics - [description]
      * @param {integer} [pointsTotal=32] - [description]
@@ -381,6 +383,8 @@ var Path = new Class({
      * @method Phaser.Curves.Path#getBounds
      * @since 3.0.0
      *
+     * @generic {Phaser.Math.Vector2} O - [out,$return]
+     *
      * @param {Phaser.Geom.Rectangle} [out] - [description]
      * @param {integer} [accuracy=16] - [description]
      *
@@ -428,7 +432,7 @@ var Path = new Class({
      * @method Phaser.Curves.Path#getCurveLengths
      * @since 3.0.0
      *
-     * @return {array} [description]
+     * @return {number[]} [description]
      */
     getCurveLengths: function ()
     {
@@ -462,6 +466,8 @@ var Path = new Class({
      *
      * @method Phaser.Curves.Path#getEndPoint
      * @since 3.0.0
+     *
+     * @generic {Phaser.Math.Vector2} O - [out,$return]
      *
      * @param {Phaser.Math.Vector2} [out] - [description]
      *
@@ -513,10 +519,12 @@ var Path = new Class({
      * @method Phaser.Curves.Path#getPoint
      * @since 3.0.0
      *
+     * @generic {Phaser.Math.Vector2} O - [out,$return]
+     *
      * @param {number} t - [description]
      * @param {Phaser.Math.Vector2} [out] - [description]
      *
-     * @return {Phaser.Math.Vector2|null} [description]
+     * @return {?Phaser.Math.Vector2} [description]
      */
     getPoint: function (t, out)
     {
@@ -606,6 +614,8 @@ var Path = new Class({
      * @method Phaser.Curves.Path#getRandomPoint
      * @since 3.0.0
      *
+     * @generic {Phaser.Math.Vector2} O - [out,$return]
+     *
      * @param {Phaser.Math.Vector2} [out] - [description]
      *
      * @return {Phaser.Math.Vector2} [description]
@@ -652,6 +662,8 @@ var Path = new Class({
      * @method Phaser.Curves.Path#getStartPoint
      * @since 3.0.0
      *
+     * @generic {Phaser.Math.Vector2} O - [out,$return]
+     *
      * @param {Phaser.Math.Vector2} [out] - [description]
      *
      * @return {Phaser.Math.Vector2} [description]
@@ -671,7 +683,7 @@ var Path = new Class({
      * @method Phaser.Curves.Path#lineTo
      * @since 3.0.0
      *
-     * @param {number|Phaser.Math.Vector2} x - [description]
+     * @param {(number|Phaser.Math.Vector2)} x - [description]
      * @param {number} [y] - [description]
      *
      * @return {Phaser.Curves.Path} [description]

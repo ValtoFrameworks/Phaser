@@ -31,9 +31,9 @@ var GetValue = require('../../utils/object/GetValue');
  * @property {Phaser.Input.Keyboard.Key} [zoomIn] - The Key to be pressed that will zoom the Camera in.
  * @property {Phaser.Input.Keyboard.Key} [zoomOut] - The Key to be pressed that will zoom the Camera out.
  * @property {float} [zoomSpeed=0.01] - The speed at which the camera will zoom if the `zoomIn` or `zoomOut` keys are pressed.
- * @property {float|{x:float,y:float}} [acceleration=0] - The horizontal and vertical acceleration the camera will move.
- * @property {float|{x:float,y:float}} [drag=0] - The horizontal and vertical drag applied to the camera when it is moving.
- * @property {float|{x:float,y:float}} [maxSpeed=0] - The maximum horizontal and vertical speed the camera will move.
+ * @property {(float|{x:float,y:float})} [acceleration=0] - The horizontal and vertical acceleration the camera will move.
+ * @property {(float|{x:float,y:float})} [drag=0] - The horizontal and vertical drag applied to the camera when it is moving.
+ * @property {(float|{x:float,y:float})} [maxSpeed=0] - The maximum horizontal and vertical speed the camera will move.
  */
 
 /**
@@ -57,7 +57,7 @@ var SmoothedKeyControl = new Class({
          * The Camera that this Control will update.
          *
          * @name Phaser.Cameras.Controls.SmoothedKeyControl#camera
-         * @type {Phaser.Cameras.Scene2D.Camera}
+         * @type {?Phaser.Cameras.Scene2D.Camera}
          * @default null
          * @since 3.0.0
          */
@@ -67,7 +67,7 @@ var SmoothedKeyControl = new Class({
          * The Key to be pressed that will move the Camera left.
          *
          * @name Phaser.Cameras.Controls.SmoothedKeyControl#left
-         * @type {Phaser.Input.Keyboard.Key}
+         * @type {?Phaser.Input.Keyboard.Key}
          * @default null
          * @since 3.0.0
          */
@@ -77,7 +77,7 @@ var SmoothedKeyControl = new Class({
          * The Key to be pressed that will move the Camera right.
          *
          * @name Phaser.Cameras.Controls.SmoothedKeyControl#right
-         * @type {Phaser.Input.Keyboard.Key}
+         * @type {?Phaser.Input.Keyboard.Key}
          * @default null
          * @since 3.0.0
          */
@@ -87,7 +87,7 @@ var SmoothedKeyControl = new Class({
          * The Key to be pressed that will move the Camera up.
          *
          * @name Phaser.Cameras.Controls.SmoothedKeyControl#up
-         * @type {Phaser.Input.Keyboard.Key}
+         * @type {?Phaser.Input.Keyboard.Key}
          * @default null
          * @since 3.0.0
          */
@@ -97,7 +97,7 @@ var SmoothedKeyControl = new Class({
          * The Key to be pressed that will move the Camera down.
          *
          * @name Phaser.Cameras.Controls.SmoothedKeyControl#down
-         * @type {Phaser.Input.Keyboard.Key}
+         * @type {?Phaser.Input.Keyboard.Key}
          * @default null
          * @since 3.0.0
          */
@@ -107,7 +107,7 @@ var SmoothedKeyControl = new Class({
          * The Key to be pressed that will zoom the Camera in.
          *
          * @name Phaser.Cameras.Controls.SmoothedKeyControl#zoomIn
-         * @type {Phaser.Input.Keyboard.Key}
+         * @type {?Phaser.Input.Keyboard.Key}
          * @default null
          * @since 3.0.0
          */
@@ -117,7 +117,7 @@ var SmoothedKeyControl = new Class({
          * The Key to be pressed that will zoom the Camera out.
          *
          * @name Phaser.Cameras.Controls.SmoothedKeyControl#zoomOut
-         * @type {Phaser.Input.Keyboard.Key}
+         * @type {?Phaser.Input.Keyboard.Key}
          * @default null
          * @since 3.0.0
          */

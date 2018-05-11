@@ -139,10 +139,9 @@ var SceneManager = new Class({
                     data: {}
                 });
             }
-
-            //  Only need to wait for the boot event if we've scenes to actually boot
-            game.events.once('ready', this.bootQueue, this);
         }
+        
+        game.events.once('ready', this.bootQueue, this);
     },
 
     /**
@@ -299,7 +298,7 @@ var SceneManager = new Class({
      * @since 3.0.0
      *
      * @param {string} key - A unique key used to reference the Scene, i.e. `MainMenu` or `Level1`.
-     * @param {(Phaser.Scene|SettingsConfig|function)} sceneConfig - The config for the Scene
+     * @param {(Phaser.Scene|Phaser.Scenes.Settings.Config|function)} sceneConfig - The config for the Scene
      * @param {boolean} [autoStart=false] - If `true` the Scene will be started immediately after being added.
      * @param {object} [data] - Optional data object. This will be set as Scene.settings.data and passed to `Scene.init`.
      *
@@ -319,6 +318,11 @@ var SceneManager = new Class({
                 autoStart: autoStart,
                 data: data
             });
+
+            if (!this.isBooted)
+            {
+                this._data[key] = { data: data };
+            }
 
             return null;
         }
@@ -393,7 +397,7 @@ var SceneManager = new Class({
         {
             var sceneToRemove = this.getScene(key);
 
-            if (!sceneToRemove)
+            if (!sceneToRemove || sceneToRemove.sys.isTransitioning())
             {
                 return this;
             }
@@ -430,16 +434,24 @@ var SceneManager = new Class({
      */
     bootScene: function (scene)
     {
+        var sys = scene.sys;
+        var settings = sys.settings;
+
         if (scene.init)
         {
-            scene.init.call(scene, scene.sys.settings.data);
+            scene.init.call(scene, settings.data);
+
+            if (settings.isTransition)
+            {
+                sys.events.emit('transitioninit', settings.transitionFrom, settings.transitionDuration);
+            }
         }
 
         var loader;
 
-        if (scene.sys.load)
+        if (sys.load)
         {
-            loader = scene.sys.load;
+            loader = sys.load;
 
             loader.reset();
         }
@@ -455,7 +467,7 @@ var SceneManager = new Class({
             }
             else
             {
-                scene.sys.settings.status = CONST.LOADING;
+                settings.status = CONST.LOADING;
 
                 //  Start the loader going as we have something in the queue
                 loader.once('complete', this.loadComplete, this);
@@ -484,6 +496,12 @@ var SceneManager = new Class({
     loadComplete: function (loader)
     {
         var scene = loader.scene;
+
+        // Try to unlock HTML5 sounds every time any loader completes
+        if (this.game.sound.onBlurPausedSounds)
+        {
+            this.game.sound.unlock();
+        }
 
         this.create(scene);
     },
@@ -584,14 +602,22 @@ var SceneManager = new Class({
      */
     create: function (scene)
     {
+        var sys = scene.sys;
+        var settings = sys.settings;
+
         if (scene.create)
         {
             scene.sys.settings.status = CONST.CREATING;
 
             scene.create.call(scene, scene.sys.settings.data);
+
+            if (settings.isTransition)
+            {
+                sys.events.emit('transitionstart', settings.transitionFrom, settings.transitionDuration);
+            }
         }
 
-        scene.sys.settings.status = CONST.RUNNING;
+        settings.status = CONST.RUNNING;
     },
 
     /**
@@ -681,7 +707,7 @@ var SceneManager = new Class({
      * @since 3.0.0
      *
      * @param {string} key - The key of the Scene.
-     * @param {(string|SettingsConfig)} sceneConfig - The Scene config.
+     * @param {(string|Phaser.Scenes.Settings.Config)} sceneConfig - The Scene config.
      *
      * @return {Phaser.Scene} The created Scene.
      */
@@ -765,7 +791,7 @@ var SceneManager = new Class({
      * @since 3.0.0
      *
      * @param {string} key - The key to check in the Scene config.
-     * @param {(Phaser.Scene|SettingsConfig|function)} sceneConfig - The Scene config.
+     * @param {(Phaser.Scene|Phaser.Scenes.Settings.Config|function)} sceneConfig - The Scene config.
      *
      * @return {string} The Scene key.
      */
@@ -804,7 +830,7 @@ var SceneManager = new Class({
      * @method Phaser.Scenes.SceneManager#getScene
      * @since 3.0.0
      *
-     * @param {string} key - The Scene to retrieve.
+     * @param {string|Phaser.Scene} key - The Scene to retrieve.
      *
      * @return {?Phaser.Scene} The Scene.
      */
@@ -955,7 +981,7 @@ var SceneManager = new Class({
     {
         var scene = this.getScene(key);
 
-        if (scene)
+        if (scene && !scene.sys.isTransitioning())
         {
             scene.sys.sleep();
         }
@@ -1023,11 +1049,11 @@ var SceneManager = new Class({
             }
 
             //  Files payload?
-            if (loader && Array.isArray(scene.sys.settings.files))
+            if (loader && scene.sys.settings.hasOwnProperty('pack'))
             {
                 loader.reset();
 
-                if (loader.loadArray(scene.sys.settings.files))
+                if (loader.addPack({ payload: scene.sys.settings.pack }))
                 {
                     scene.sys.settings.status = CONST.LOADING;
 
@@ -1059,7 +1085,7 @@ var SceneManager = new Class({
     {
         var scene = this.getScene(key);
 
-        if (scene)
+        if (scene && !scene.sys.isTransitioning())
         {
             scene.sys.shutdown();
         }
@@ -1297,7 +1323,7 @@ var SceneManager = new Class({
             var indexA = this.getIndex(keyA);
             var indexB = this.getIndex(keyB);
 
-            if (indexA > indexB && indexA !== -1 && indexB !== -1)
+            if (indexA !== -1 && indexB !== -1)
             {
                 var tempScene = this.getAt(indexB);
 
@@ -1305,7 +1331,7 @@ var SceneManager = new Class({
                 this.scenes.splice(indexB, 1);
 
                 //  Add in new location
-                this.scenes.splice(indexA, 0, tempScene);
+                this.scenes.splice(indexA + 1, 0, tempScene);
             }
         }
 
@@ -1341,15 +1367,22 @@ var SceneManager = new Class({
             var indexA = this.getIndex(keyA);
             var indexB = this.getIndex(keyB);
 
-            if (indexA < indexB && indexA !== -1 && indexB !== -1)
+            if (indexA !== -1 && indexB !== -1)
             {
                 var tempScene = this.getAt(indexB);
 
                 //  Remove
                 this.scenes.splice(indexB, 1);
 
-                //  Add in new location
-                this.scenes.splice(indexA, 0, tempScene);
+                if (indexA === 0)
+                {
+                    this.scenes.unshift(tempScene);
+                }
+                else
+                {
+                    //  Add in new location
+                    this.scenes.splice(indexA, 0, tempScene);
+                }
             }
         }
 
@@ -1453,6 +1486,8 @@ var SceneManager = new Class({
 
             sys.destroy();
         }
+
+        this.update = NOOP;
 
         this.scenes = [];
 

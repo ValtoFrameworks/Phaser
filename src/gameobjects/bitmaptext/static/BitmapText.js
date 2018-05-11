@@ -9,7 +9,6 @@ var Components = require('../../components');
 var GameObject = require('../../GameObject');
 var GetBitmapTextSize = require('../GetBitmapTextSize');
 var ParseFromAtlas = require('../ParseFromAtlas');
-var ParseRetroFont = require('../ParseRetroFont');
 var Render = require('./BitmapTextRender');
 
 /**
@@ -29,6 +28,7 @@ var Render = require('./BitmapTextRender');
 
 /**
  * @typedef {object} JSONBitmapText
+ * @extends {JSONGameObject}
  *
  * @property {string} font - [description]
  * @property {string} text - [description]
@@ -49,6 +49,7 @@ var Render = require('./BitmapTextRender');
  * @extends Phaser.GameObjects.Components.Alpha
  * @extends Phaser.GameObjects.Components.BlendMode
  * @extends Phaser.GameObjects.Components.Depth
+ * @extends Phaser.GameObjects.Components.Mask
  * @extends Phaser.GameObjects.Components.Origin
  * @extends Phaser.GameObjects.Components.Pipeline
  * @extends Phaser.GameObjects.Components.ScaleMode
@@ -73,6 +74,7 @@ var BitmapText = new Class({
         Components.Alpha,
         Components.BlendMode,
         Components.Depth,
+        Components.Mask,
         Components.Origin,
         Components.Pipeline,
         Components.ScaleMode,
@@ -119,7 +121,7 @@ var BitmapText = new Class({
          * @type {string}
          * @since 3.0.0
          */
-        this.text = (Array.isArray(text)) ? text.join('\n') : text;
+        this.text = '';
 
         /**
          * [description]
@@ -139,6 +141,8 @@ var BitmapText = new Class({
          * @since 3.4.0
          */
         this.letterSpacing = 0;
+
+        this.setText(text);
 
         this.setTexture(entry.texture, entry.frame);
         this.setPosition(x, y);
@@ -288,7 +292,7 @@ var BitmapText = new Class({
      * @method Phaser.GameObjects.BitmapText#toJSON
      * @since 3.0.0
      *
-     * @return {JSONGameObject.<JSONBitmapText>} [description]
+     * @return {JSONBitmapText} [description]
      */
     toJSON: function ()
     {
@@ -310,7 +314,6 @@ var BitmapText = new Class({
 
 });
 
-BitmapText.ParseRetroFont = ParseRetroFont;
 BitmapText.ParseFromAtlas = ParseFromAtlas;
 
 module.exports = BitmapText;

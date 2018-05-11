@@ -17,17 +17,12 @@ var Device = require('../device');
 var DOMContentLoaded = require('../dom/DOMContentLoaded');
 var EventEmitter = require('eventemitter3');
 var InputManager = require('../input/InputManager');
-var NOOP = require('../utils/NOOP');
-var PluginManager = require('./PluginManager');
+var PluginManager = require('../plugins/PluginManager');
 var SceneManager = require('../scene/SceneManager');
 var SoundManagerCreator = require('../sound/SoundManagerCreator');
 var TextureManager = require('../textures/TextureManager');
 var TimeStep = require('./TimeStep');
 var VisibilityHandler = require('./VisibilityHandler');
-
-/**
- * @callback GameStepCallback
- */
 
 /**
  * @classdesc
@@ -74,7 +69,9 @@ var Game = new Class({
         this.renderer = null;
 
         /**
-         * A reference to the HTML Canvas Element on which the renderer is drawing.
+         * A reference to the HTML Canvas Element that Phaser uses to render the game.
+         * This is created automatically by Phaser unless you provide a `canvas` property
+         * in your Game Config.
          *
          * @name Phaser.Game#canvas
          * @type {HTMLCanvasElement}
@@ -83,10 +80,14 @@ var Game = new Class({
         this.canvas = null;
 
         /**
-         * A reference to the Canvas Rendering Context belonging to the Canvas Element this game is rendering to.
+         * A reference to the Rendering Context belonging to the Canvas Element this game is rendering to.
+         * If the game is running under Canvas it will be a 2d Canvas Rendering Context.
+         * If the game is running under WebGL it will be a WebGL Rendering Context.
+         * This context is created automatically by Phaser unless you provide a `context` property
+         * in your Game Config.
          *
          * @name Phaser.Game#context
-         * @type {CanvasRenderingContext2D}
+         * @type {(CanvasRenderingContext2D|WebGLRenderingContext|WebGL2RenderingContext)}
          * @since 3.0.0
          */
         this.context = null;
@@ -226,21 +227,30 @@ var Game = new Class({
          * those plugins into Scenes as required.
          *
          * @name Phaser.Game#plugins
-         * @type {Phaser.Boot.PluginManager}
+         * @type {Phaser.Plugins.PluginManager}
          * @since 3.0.0
          */
         this.plugins = new PluginManager(this, this.config);
 
         /**
-         * The `onStepCallback` is a callback that is fired each time the Time Step ticks.
-         * It is set automatically when the Game boot process has completed.
+         * Is this Game pending destruction at the start of the next frame?
          *
-         * @name Phaser.Game#onStepCallback
-         * @type {GameStepCallback}
+         * @name Phaser.Game#pendingDestroy
+         * @type {boolean}
          * @private
-         * @since 3.0.0
+         * @since 3.5.0
          */
-        this.onStepCallback = NOOP;
+        this.pendingDestroy = false;
+
+        /**
+         * Remove the Canvas once the destroy is over?
+         *
+         * @name Phaser.Game#removeCanvas
+         * @type {boolean}
+         * @private
+         * @since 3.5.0
+         */
+        this.removeCanvas = false;
 
         //  Wait for the DOM Ready event, then call boot.
         DOMContentLoaded(this.boot.bind(this));
@@ -309,11 +319,47 @@ var Game = new Class({
 
         VisibilityHandler(this.events);
 
-        this.events.on('hidden', this.onHidden, this);
-        this.events.on('visible', this.onVisible, this);
-        this.events.on('blur', this.onBlur, this);
-        this.events.on('focus', this.onFocus, this);
+        var eventEmitter = this.events;
+
+        eventEmitter.on('hidden', this.onHidden, this);
+        eventEmitter.on('visible', this.onVisible, this);
+        eventEmitter.on('blur', this.onBlur, this);
+        eventEmitter.on('focus', this.onFocus, this);
     },
+
+    /**
+     * Game Pre-Step event.
+     *
+     * This event is dispatched before the main Step starts.
+     * By this point none of the Scene updates have happened.
+     * Hook into it from plugins or systems that need to update before the Scene Manager does.
+     *
+     * @event Phaser.Game#prestepEvent
+     * @param {number} time - [description]
+     * @param {number} delta - [description]
+     */
+
+    /**
+     * Game Step event.
+     *
+     * This event is dispatched after Pre-Step and before the Scene Manager steps.
+     * Hook into it from plugins or systems that need to update before the Scene Manager does, but after core Systems.
+     *
+     * @event Phaser.Game#stepEvent
+     * @param {number} time - [description]
+     * @param {number} delta - [description]
+     */
+
+    /**
+     * Game Post-Step event.
+     *
+     * This event is dispatched after the Scene Manager has updated.
+     * Hook into it from plugins or systems that need to do things before the render starts.
+     *
+     * @event Phaser.Game#poststepEvent
+     * @param {number} time - [description]
+     * @param {number} delta - [description]
+     */
 
     /**
      * Game Pre-Render event.
@@ -345,6 +391,9 @@ var Game = new Class({
      * It will then render each Scene in turn, via the Renderer. This process emits `prerender` and `postrender` events.
      *
      * @method Phaser.Game#step
+     * @fires Phaser.Game#prestepEvent
+     * @fires Phaser.Game#stepEvent
+     * @fires Phaser.Game#poststepEvent
      * @fires Phaser.Game#prerenderEvent
      * @fires Phaser.Game#postrenderEvent
      * @since 3.0.0
@@ -354,31 +403,48 @@ var Game = new Class({
      */
     step: function (time, delta)
     {
-        //  Global Managers
+        if (this.pendingDestroy)
+        {
+            return this.runDestroy();
+        }
 
-        this.input.update(time, delta);
+        var eventEmitter = this.events;
 
-        this.sound.update(time, delta);
+        //  Global Managers like Input and Sound update in the prestep
 
-        //  Scenes
+        eventEmitter.emit('prestep', time, delta);
 
-        this.onStepCallback();
+        //  This is mostly meant for user-land code and plugins
+
+        eventEmitter.emit('step', time, delta);
+
+        //  Update the Scene Manager and all active Scenes
 
         this.scene.update(time, delta);
 
-        //  Render
+        //  Our final event before rendering starts
+
+        eventEmitter.emit('poststep', time, delta);
 
         var renderer = this.renderer;
 
+        //  Run the Pre-render (clearing the canvas, setting background colors, etc)
+
         renderer.preRender();
 
-        this.events.emit('prerender', renderer);
+        eventEmitter.emit('prerender', renderer, time, delta);
+
+        //  The main render loop. Iterates all Scenes and all Cameras in those scenes, rendering to the renderer instance.
 
         this.scene.render(renderer);
 
+        //  The Post-Render call. Tidies up loose end, takes snapshots, etc.
+
         renderer.postRender();
 
-        this.events.emit('postrender', renderer);
+        //  The final event before the step repeats. Your last chance to do anything to the canvas before it all starts again.
+
+        eventEmitter.emit('postrender', renderer, time, delta);
     },
 
     /**
@@ -401,23 +467,25 @@ var Game = new Class({
      */
     headlessStep: function (time, delta)
     {
+        var eventEmitter = this.events;
+
         //  Global Managers
 
-        this.input.update(time, delta);
+        eventEmitter.emit('prestep', time, delta);
 
-        this.sound.update(time, delta);
+        eventEmitter.emit('step', time, delta);
 
         //  Scenes
 
-        this.onStepCallback();
-
         this.scene.update(time, delta);
+
+        eventEmitter.emit('poststep', time, delta);
 
         //  Render
 
-        this.events.emit('prerender');
+        eventEmitter.emit('prerender');
 
-        this.events.emit('postrender');
+        eventEmitter.emit('postrender');
     },
 
     /**
@@ -527,14 +595,33 @@ var Game = new Class({
     },
 
     /**
-     * Destroys this Phaser.Game instance, all global systems, all sub-systems and all Scenes.
+     * Flags this Game instance as needing to be destroyed on the next frame.
+     * It will wait until the current frame has completed and then call `runDestroy` internally.
      *
      * @method Phaser.Game#destroy
      * @since 3.0.0
+     *
+     * @param {boolean} removeCanvas - Set to `true` if you would like the parent canvas element removed from the DOM, or `false` to leave it in place.
      */
     destroy: function (removeCanvas)
     {
-        this.loop.destroy();
+        this.pendingDestroy = true;
+
+        this.removeCanvas = removeCanvas;
+    },
+
+    /**
+     * Destroys this Phaser.Game instance, all global systems, all sub-systems and all Scenes.
+     *
+     * @method Phaser.Game#runDestroy
+     * @private
+     * @since 3.5.0
+     */
+    runDestroy: function ()
+    {
+        this.events.emit('destroy');
+
+        this.events.removeAllListeners();
 
         this.scene.destroy();
 
@@ -543,16 +630,19 @@ var Game = new Class({
             this.renderer.destroy();
         }
 
-        this.events.emit('destroy');
-
-        this.events.removeAllListeners();
-
-        this.onStepCallback = null;
-
-        if (removeCanvas && this.canvas)
+        if (this.removeCanvas && this.canvas)
         {
             CanvasPool.remove(this.canvas);
+
+            if (this.canvas.parentNode)
+            {
+                this.canvas.parentNode.removeChild(this.canvas);
+            }
         }
+
+        this.loop.destroy();
+
+        this.pendingDestroy = false;
     }
 
 });

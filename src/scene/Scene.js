@@ -16,7 +16,7 @@ var Systems = require('./Systems');
  * @constructor
  * @since 3.0.0
  *
- * @param {(string|SettingsConfig)} config - Scene specific configuration settings.
+ * @param {(string|Phaser.Scenes.Settings.Config)} config - Scene specific configuration settings.
  */
 var Scene = new Class({
 
@@ -168,7 +168,7 @@ var Scene = new Class({
          * This property will only be available if defined in the Scene Injection Map and the plugin is installed.
          *
          * @name Phaser.Scene#lights
-         * @type {Phaser.GameObjects.DisplayList}
+         * @type {Phaser.GameObjects.LightsManager}
          * @since 3.0.0
          */
         this.lights;

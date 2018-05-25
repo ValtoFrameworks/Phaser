@@ -1,7 +1,7 @@
 'use strict';
 
 const webpack = require('webpack');
-const WebpackShellPlugin = require('webpack-shell-plugin');
+const exec = require('child_process').exec;
 
 module.exports = {
     mode: 'development',
@@ -9,7 +9,8 @@ module.exports = {
     context: `${__dirname}/src/`,
 
     entry: {
-        phaser: './phaser.js'
+        phaser: './phaser.js',
+        'phaser-core': './phaser-core.js'
     },
 
     output: {
@@ -30,8 +31,16 @@ module.exports = {
             "typeof CANVAS_RENDERER": JSON.stringify(true),
             "typeof WEBGL_RENDERER": JSON.stringify(true)
         }),
-
-        new WebpackShellPlugin({onBuildExit: 'node scripts/copy-to-examples.js'})
+        {
+            apply: (compiler) => {
+                compiler.hooks.afterEmit.tap('AfterEmitPlugin', (compilation) => {
+                    exec('node scripts/copy-to-examples.js', (err, stdout, stderr) => {
+                        if (stdout) process.stdout.write(stdout);
+                        if (stderr) process.stderr.write(stderr);
+                    });
+                });
+            }
+        }
     ],
 
     devtool: 'source-map'

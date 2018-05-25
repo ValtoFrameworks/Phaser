@@ -15,10 +15,12 @@ var Class = require('../utils/Class');
  *
  * @class ScenePlugin
  * @memberOf Phaser.Plugins
+ * @extends Phaser.Plugins.BasePlugin
  * @constructor
  * @since 3.8.0
  *
- * @param {Phaser.Game} game - [description]
+ * @param {Phaser.Scene} scene - A reference to the Scene that has installed this plugin.
+ * @param {Phaser.Plugins.PluginManager} pluginManager - A reference to the Plugin Manager.
  */
 var ScenePlugin = new Class({
 
@@ -46,7 +48,7 @@ var ScenePlugin = new Class({
          * This property is only set when the plugin is instantiated and added to the Scene, not before.
          *
          * @name Phaser.Plugins.ScenePlugin#systems
-         * @type {?Phaser.Scene.Systems}
+         * @type {?Phaser.Scenes.Systems}
          * @protected
          * @since 3.8.0
          */
